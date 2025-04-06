@@ -1,0 +1,131 @@
+[
+  {
+    "name": "Joko",
+    "debt": [
+      {
+        "payer": "med",
+        "totalAmount": 12000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "grabcar",
+            "amount": 12000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "wahyu",
+    "debt": [
+      {
+        "payer": "Joko",
+        "totalAmount": 68000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 48000
+          },
+          {
+            "title": "piza",
+            "amount": 20000
+          }
+        ]
+      },
+      {
+        "payer": "med",
+        "totalAmount": 12000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "grabcar",
+            "amount": 12000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "med",
+    "debt": [
+      {
+        "payer": "Joko",
+        "totalAmount": 68000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 48000
+          },
+          {
+            "title": "piza",
+            "amount": 20000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "jarv",
+    "debt": [
+      {
+        "payer": "Joko",
+        "totalAmount": 68000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 48000
+          },
+          {
+            "title": "piza",
+            "amount": 20000
+          }
+        ]
+      },
+      {
+        "payer": "med",
+        "totalAmount": 12000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "grabcar",
+            "amount": 12000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ce",
+    "debt": [
+      {
+        "payer": "Joko",
+        "totalAmount": 68000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 48000
+          },
+          {
+            "title": "piza",
+            "amount": 20000
+          }
+        ]
+      },
+      {
+        "payer": "med",
+        "totalAmount": 12000,
+        "surplus": 0,
+        "transactions": [
+          {
+            "title": "grabcar",
+            "amount": 12000
+          }
+        ]
+      }
+    ]
+  }
+]

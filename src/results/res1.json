@@ -1,0 +1,92 @@
+[
+  {
+    "name": "wahyu",
+    "debts": [
+      {
+        "name": "Joko",
+        "totalAmount": 48000,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 48000
+          }
+        ]
+      },
+      {
+        "name": "med",
+        "totalAmount": 12000,
+        "transactions": [
+          {
+            "title": "Grabcar",
+            "amount": 12000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "med",
+    "debts": [
+      {
+        "name": "Joko",
+        "totalAmount": 36000,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 36000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "jarv",
+    "debts": [
+      {
+        "name": "Joko",
+        "totalAmount": 48000,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 48000
+          }
+        ]
+      },
+      {
+        "name": "med",
+        "totalAmount": 12000,
+        "transactions": [
+          {
+            "title": "Grabcar",
+            "amount": 12000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ce",
+    "debts": [
+      {
+        "name": "Joko",
+        "totalAmount": 48000,
+        "transactions": [
+          {
+            "title": "baso",
+            "amount": 48000
+          }
+        ]
+      },
+      {
+        "name": "med",
+        "totalAmount": 12000,
+        "transactions": [
+          {
+            "title": "Grabcar",
+            "amount": 12000
+          }
+        ]
+      }
+    ]
+  }
+]
