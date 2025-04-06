@@ -20,7 +20,9 @@ function App() {
   const [transactionList, setTransactionList] = useState([
     {
       title: '',
-      amount: 0,
+      priceBeforeTax: 0,
+      priceAfterTax: 0,
+      tax: 0,
       payer: personList[0],
       receiver: [''],
     },

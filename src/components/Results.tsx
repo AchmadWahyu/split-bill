@@ -1,3 +1,4 @@
+import { formatCurrencyIDR } from '../utils/currency';
 import { createArrOfDebts, normalizeArrOfDebts } from '../utils/debts';
 import { Person } from './PersonListForm';
 import { Transaction } from './TransactionListForm';
@@ -21,7 +22,7 @@ const Results = ({
 
       <ol style={{ paddingLeft: 0 }}>
         {finalResults.map((person, personIndex) => {
-          const filteredDebt = person.debt.filter((d) => d?.totalAmount);
+          const filteredDebt = person.debt.filter((d) => d?.totalDebtAfterTax);
 
           if (!filteredDebt?.length) return null;
 
@@ -35,7 +36,7 @@ const Results = ({
               }}
             >
               <b>{person.name}</b>
-              
+
               <p>Bayar ke: </p>
 
               <ul>
@@ -43,12 +44,17 @@ const Results = ({
                   if (debt) {
                     return (
                       <li key={debt.payer}>
-                        <b>{debt.payer}</b>: {debt.totalAmount}
+                        <b>{debt.payer}</b>:{' '}
+                        {formatCurrencyIDR(debt.totalDebtAfterTax)}
                         <ul>
                           {debt.transactions.map(
                             (transaction, transactionIndex) => (
-                              <li key={transactionIndex} style={{color: '#737373'}}>
-                                {transaction.title} - {transaction.amount}
+                              <li
+                                key={transactionIndex}
+                                style={{ color: '#737373' }}
+                              >
+                                {transaction.title} -{' '}
+                                {formatCurrencyIDR(transaction.debtAfterTax)}
                               </li>
                             )
                           )}
