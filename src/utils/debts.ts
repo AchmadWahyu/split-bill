@@ -2,11 +2,11 @@ import { Transaction } from '../components/TransactionListForm';
 
 type Debt = {
   payer: string;
-  totalAmount: number;
+  totalDebtAfterTax: number;
   surplus: number;
   transactions: {
     title: string;
-    amount: number;
+    debtAfterTax: number;
   }[];
 };
 
@@ -32,10 +32,11 @@ function createArrOfDebts(
           (debt) => debt.payer === transaction.payer.name
         );
 
-        const averageAmountForEachPerson =
-          transaction.amount / transaction.receiver.length;
+        const averagedebtAfterTaxForEachPerson =
+          transaction.priceAfterTax /
+          transaction.receiver?.filter((r) => Boolean(r))?.length;
 
-        // if there is another transaction with the same payer, update the total amount and add the transaction to the list
+        // if there is another transaction with the same payer, update the total price and add the transaction to the list
         if (anotherTransactionWithTheSamePayer) {
           const newArrDebts = arrDebts.filter(
             (debt) => debt.payer !== transaction.payer.name
@@ -43,14 +44,14 @@ function createArrOfDebts(
 
           const newUpdatedDebt = {
             ...anotherTransactionWithTheSamePayer,
-            totalAmount:
-              anotherTransactionWithTheSamePayer.totalAmount +
-              averageAmountForEachPerson,
+            totalDebtAfterTax:
+              anotherTransactionWithTheSamePayer.totalDebtAfterTax +
+              averagedebtAfterTaxForEachPerson,
             transactions: [
               ...anotherTransactionWithTheSamePayer.transactions,
               {
                 title: transaction.title,
-                amount: averageAmountForEachPerson,
+                debtAfterTax: averagedebtAfterTaxForEachPerson,
               },
             ],
           };
@@ -60,12 +61,12 @@ function createArrOfDebts(
           // if not, create a new debt
           arrDebts.push({
             payer: transaction.payer.name,
-            totalAmount: averageAmountForEachPerson,
+            totalDebtAfterTax: averagedebtAfterTaxForEachPerson,
             surplus: 0,
             transactions: [
               {
                 title: transaction.title,
-                amount: averageAmountForEachPerson,
+                debtAfterTax: averagedebtAfterTaxForEachPerson,
               },
             ],
           });
@@ -95,23 +96,24 @@ function normalizeArrOfDebts(personWithDebts: PersonWithDebt[]) {
           (payerDebt) => payerDebt.payer === person.name
         );
 
-        const currentPayerDebt = currentPayerDebtData?.totalAmount || 0;
+        const currentPayerDebt = currentPayerDebtData?.totalDebtAfterTax || 0;
 
         const surplusInPayerCurrentDebt =
-          currentPayerDebt > currentPersonDebt.totalAmount;
+          currentPayerDebt > currentPersonDebt.totalDebtAfterTax;
 
         if (surplusInPayerCurrentDebt) {
           // hilangkan hutang dari current person ke payer
           return {
             ...currentPersonDebt,
-            totalAmount: 0,
+            totalDebtAfterTax: 0,
             transactions: [],
           };
         } else {
           // tambah surplus dari payer ke current person
           return {
             ...currentPersonDebt,
-            totalAmount: currentPersonDebt.totalAmount - currentPayerDebt,
+            totalDebtAfterTax:
+              currentPersonDebt.totalDebtAfterTax - currentPayerDebt,
             surplus: currentPayerDebt,
           };
         }
