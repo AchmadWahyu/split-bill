@@ -1,18 +1,15 @@
 import { useState } from 'react';
 import './App.css';
 import PersonListForm, { Person } from './components/PersonListForm';
-
-type Transaction = {
-  title: string;
-  amount: number;
-  payer: string;
-  receiver: string[];
-};
+import TransactionListForm, {
+  Transaction,
+} from './components/TransactionListForm';
+import Results from './components/Results';
 
 function App() {
   const [personList, setPersonList] = useState<Person[]>([
     {
-      name: '',
+      name: 'Joko',
     },
   ]);
 
@@ -20,11 +17,38 @@ function App() {
     setPersonList(newPersonList);
   };
 
+  const [transactionList, setTransactionList] = useState([
+    {
+      title: '',
+      amount: 0,
+      payer: personList[0],
+      receiver: [''],
+    },
+  ]);
+
+  const handleTransactionList = (newTransactionList: Transaction[]) => {
+    setTransactionList(newTransactionList);
+  };
+
   return (
-    <PersonListForm
-      personList={personList}
-      handlePersonList={handlePersonList}
-    />
+    <>
+      <PersonListForm
+        personList={personList}
+        handlePersonList={handlePersonList}
+      />
+
+      <hr />
+
+      <TransactionListForm
+        personList={personList}
+        transactionList={transactionList}
+        handleTransactionList={handleTransactionList}
+      />
+
+      <hr />
+
+      <Results personList={personList} transactionList={transactionList} />
+    </>
   );
 }
 
