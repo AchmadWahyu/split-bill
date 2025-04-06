@@ -1,9 +1,12 @@
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Person } from './PersonListForm';
+import { formatCurrencyIDR } from '../utils/currency';
 
 export type Transaction = {
   title: string;
-  amount: number;
+  priceBeforeTax: number;
+  priceAfterTax: number;
+  tax: number;
   payer: Person;
   receiver: string[];
 };
@@ -21,7 +24,7 @@ const TransactionListForm = ({
   transactionList: Transaction[];
   handleTransactionList: (newTransactionList: Transaction[]) => void;
 }) => {
-  const { register, handleSubmit, control, getValues, watch } =
+  const { register, handleSubmit, control, getValues, watch, setValue } =
     useForm<TransactionListFormValues>({
       defaultValues: {
         transactionList,
@@ -52,7 +55,11 @@ const TransactionListForm = ({
             justifyContent: 'space-between',
           }}
         >
-          <div>
+          <div
+            style={{
+              flexGrow: 1,
+            }}
+          >
             <label>Judul Transaksi</label>
             <input
               {...register(`transactionList.${transactionIndex}.title`)}
@@ -63,12 +70,66 @@ const TransactionListForm = ({
 
             <label>Nominal Transaksi</label>
             <input
-              {...register(`transactionList.${transactionIndex}.amount`)}
+              {...register(
+                `transactionList.${transactionIndex}.priceBeforeTax`
+              )}
               placeholder="Eg: 10.000"
               style={{ display: 'block' }}
               type="number"
-              defaultValue={field.amount}
+              defaultValue={field.priceBeforeTax}
+              onChange={(e) => {
+                const userInput = Number(e.target.value);
+                const tax =
+                  watch('transactionList')?.[transactionIndex]?.tax || 0;
+
+                const priceAfterTax = userInput + (userInput * tax) / 100;
+
+                setValue(
+                  `transactionList.${transactionIndex}.priceAfterTax`,
+                  priceAfterTax
+                );
+              }}
             />
+
+            <label>Pajak (opsional)</label>
+            <div>
+              <input
+                {...register(`transactionList.${transactionIndex}.tax`)}
+                placeholder="Eg: 11"
+                type="number"
+                defaultValue={field.tax}
+                onChange={(e) => {
+                  const userInput = Number(e.target.value ?? 0);
+                  const priceBeforeTax =
+                    watch('transactionList')?.[transactionIndex]
+                      ?.priceBeforeTax || 0;
+
+                  const priceAfterTax =
+                    Number(priceBeforeTax) +
+                    (Number(priceBeforeTax) * userInput) / 100;
+
+                  console.log('AAA ', {
+                    priceBeforeTax,
+                    priceAfterTax,
+                  });
+
+                  setValue(
+                    `transactionList.${transactionIndex}.priceAfterTax`,
+                    priceAfterTax
+                  );
+                }}
+              />
+              %
+            </div>
+
+            <div>
+              <i>
+                Harga setelah pajak:{' '}
+                {formatCurrencyIDR(
+                  watch('transactionList')?.[transactionIndex]?.priceAfterTax
+                )}
+              </i>
+            </div>
 
             <label>Pembayar</label>
             <select
@@ -88,7 +149,8 @@ const TransactionListForm = ({
             {personList?.length &&
               personList.map((person, personIndex) => {
                 const currentTransactionAmout =
-                  getValues('transactionList')?.[transactionIndex]?.amount || 0;
+                  getValues('transactionList')?.[transactionIndex]
+                    ?.priceAfterTax || 0;
 
                 const currentReceivers =
                   watch('transactionList')?.[
@@ -113,7 +175,8 @@ const TransactionListForm = ({
                       value={person.name}
                       key={personIndex}
                     />
-                    {person.name} {isChecked && <b> - {averagePrice}</b>}
+                    {person.name}{' '}
+                    {isChecked && <b> - {formatCurrencyIDR(averagePrice)}</b>}
                   </label>
                 );
               })}
@@ -133,7 +196,9 @@ const TransactionListForm = ({
         onClick={() =>
           append({
             title: '',
-            amount: 0,
+            priceBeforeTax: 0,
+            priceAfterTax: 0,
+            tax: 0,
             payer: { name: '' },
             receiver: [''],
           })
