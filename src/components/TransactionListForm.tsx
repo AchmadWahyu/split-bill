@@ -42,7 +42,7 @@ const TransactionListForm = ({
         handleTransactionList(data.transactionList);
       })}
     >
-      <h2>Transaction List</h2>
+      <h2>Daftar Item</h2>
 
       {fields.map((field, transactionIndex) => (
         <div
@@ -60,7 +60,7 @@ const TransactionListForm = ({
               flexGrow: 1,
             }}
           >
-            <label>Judul Transaksi</label>
+            <label>Nama Item</label>
             <input
               {...register(`transactionList.${transactionIndex}.title`)}
               placeholder="Eg: Pizza"
@@ -68,12 +68,12 @@ const TransactionListForm = ({
               defaultValue={field.title}
             />
 
-            <label>Nominal Transaksi</label>
+            <label>Total Harga Item</label>
             <input
               {...register(
                 `transactionList.${transactionIndex}.priceBeforeTax`
               )}
-              placeholder="Eg: 10.000"
+              placeholder="Contoh: 10.000"
               style={{ display: 'block' }}
               type="number"
               defaultValue={field.priceBeforeTax}
