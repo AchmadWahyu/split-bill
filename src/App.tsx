@@ -4,13 +4,20 @@ import EventForm from './routes/EventForm/EventForm';
 import PersonListForm from './routes/PersonListForm/PersonListForm';
 import ExpenseListForm from './routes/ExpenseListForm/ExpenseListForm';
 import { useState } from 'react';
-import { eventDefaultValues } from './routes/EventForm/defaultValues';
 import { EventType } from './routes/EventForm/types';
 import EventDetailView from './routes/EventDetailView';
 import EventFormLayout from './routes/EventFormLayout';
+import { normalizeEventListData } from './utils/normalizer';
 
 function App() {
-  const [eventList, setEventList] = useState([eventDefaultValues]);
+  const eventListValueFromLocalStorage = localStorage.getItem('eventList');
+  const normalizedEventListValueFromLocalStorage = normalizeEventListData(
+    eventListValueFromLocalStorage
+  );
+
+  const [eventList, setEventList] = useState(
+    normalizedEventListValueFromLocalStorage
+  );
 
   const handleUpdateEventById = (newData: EventType) => {
     const eventAlreadyCreated = eventList?.find(
@@ -23,8 +30,12 @@ function App() {
       );
 
       setEventList(updatedEventList);
+      localStorage.setItem('eventList', JSON.stringify(updatedEventList));
     } else {
-      setEventList((prev) => [...prev, newData]);
+      const updatedEventList = [...eventList, newData];
+
+      setEventList(updatedEventList);
+      localStorage.setItem('eventList', JSON.stringify(updatedEventList));
     }
   };
 

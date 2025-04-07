@@ -21,7 +21,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const arrOfDebts = createArrOfDebts(expenseList, personListSToString);
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
-
+  
   return (
     <div>
       <h2>Hasil</h2>
