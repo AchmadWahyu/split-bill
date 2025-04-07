@@ -43,7 +43,6 @@ const ExpenseListForm = ({
           expenseList: data.expenseList,
         };
 
-        console.log("[TEST in ExpenseListForm] updatedEvent", updatedEvent)
         handleUpdateEventById(updatedEvent);
         navigate(`/acara/${eventId}`);
       })}
