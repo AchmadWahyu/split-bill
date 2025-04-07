@@ -1,50 +1,56 @@
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Person } from './PersonListForm';
-import { formatCurrencyIDR } from '../utils/currency';
+import { formatCurrencyIDR } from '../../utils/currency';
+import { ExpenseType } from './types';
+import { useNavigate, useOutletContext, useParams } from 'react-router';
+import { EditEventContextType } from '../EventFormLayout';
+import { normalizeEventData } from '../../utils/normalizer';
+import { EventType } from '../EventForm/types';
 
-export type Transaction = {
-  title: string;
-  priceBeforeTax: number;
-  priceAfterTax: number;
-  tax: number;
-  payer: Person;
-  receiver: string[];
+type ExpenseListFormValues = {
+  expenseList: ExpenseType[];
 };
 
-type TransactionListFormValues = {
-  transactionList: Transaction[];
-};
-
-const TransactionListForm = ({
-  personList,
-  transactionList,
-  handleTransactionList,
+const ExpenseListForm = ({
+  handleUpdateEventById,
 }: {
-  personList: Person[];
-  transactionList: Transaction[];
-  handleTransactionList: (newTransactionList: Transaction[]) => void;
+  handleUpdateEventById: (newData: EventType) => void;
 }) => {
+  const navigate = useNavigate();
+  const { eventId } = useParams();
+  const { event } = useOutletContext<EditEventContextType>();
+
+  const normalizedEventData = normalizeEventData(event);
+
+  const { personList, expenseList } = normalizedEventData;
+
   const { register, handleSubmit, control, getValues, watch, setValue } =
-    useForm<TransactionListFormValues>({
+    useForm<ExpenseListFormValues>({
       defaultValues: {
-        transactionList,
+        expenseList,
       },
     });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'transactionList',
+    name: 'expenseList',
   });
 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        handleTransactionList(data.transactionList);
+        const updatedEvent = {
+          ...normalizedEventData,
+          expenseList: data.expenseList,
+        };
+
+        console.log("[TEST in ExpenseListForm] updatedEvent", updatedEvent)
+        handleUpdateEventById(updatedEvent);
+        navigate(`/acara/${eventId}`);
       })}
     >
-      <h2>Daftar Item</h2>
+      <h2>Catat Pengeluaran</h2>
 
-      {fields.map((field, transactionIndex) => (
+      {fields.map((field, expenseIndex) => (
         <div
           key={field.id}
           style={{
@@ -60,32 +66,29 @@ const TransactionListForm = ({
               flexGrow: 1,
             }}
           >
-            <label>Nama Item</label>
+            <label>Apa yang dibeli?</label>
             <input
-              {...register(`transactionList.${transactionIndex}.title`)}
-              placeholder="Eg: Pizza"
+              {...register(`expenseList.${expenseIndex}.title`)}
+              placeholder="contoh: Bakso"
               style={{ display: 'block' }}
               defaultValue={field.title}
             />
 
-            <label>Total Harga Item</label>
+            <label>Berapa harganya?</label>
             <input
-              {...register(
-                `transactionList.${transactionIndex}.priceBeforeTax`
-              )}
-              placeholder="Contoh: 10.000"
+              {...register(`expenseList.${expenseIndex}.priceBeforeTax`)}
+              placeholder="Contoh: 10000"
               style={{ display: 'block' }}
               type="number"
               defaultValue={field.priceBeforeTax}
               onChange={(e) => {
                 const userInput = Number(e.target.value);
-                const tax =
-                  watch('transactionList')?.[transactionIndex]?.tax || 0;
+                const tax = watch('expenseList')?.[expenseIndex]?.tax || 0;
 
                 const priceAfterTax = userInput + (userInput * tax) / 100;
 
                 setValue(
-                  `transactionList.${transactionIndex}.priceAfterTax`,
+                  `expenseList.${expenseIndex}.priceAfterTax`,
                   priceAfterTax
                 );
               }}
@@ -97,27 +100,21 @@ const TransactionListForm = ({
             <label>Pajak (opsional)</label>
             <div>
               <input
-                {...register(`transactionList.${transactionIndex}.tax`)}
+                {...register(`expenseList.${expenseIndex}.tax`)}
                 placeholder="Eg: 11"
                 type="number"
                 defaultValue={field.tax}
                 onChange={(e) => {
                   const userInput = Number(e.target.value ?? 0);
                   const priceBeforeTax =
-                    watch('transactionList')?.[transactionIndex]
-                      ?.priceBeforeTax || 0;
+                    watch('expenseList')?.[expenseIndex]?.priceBeforeTax || 0;
 
                   const priceAfterTax =
                     Number(priceBeforeTax) +
                     (Number(priceBeforeTax) * userInput) / 100;
 
-                  console.log('AAA ', {
-                    priceBeforeTax,
-                    priceAfterTax,
-                  });
-
                   setValue(
-                    `transactionList.${transactionIndex}.priceAfterTax`,
+                    `expenseList.${expenseIndex}.priceAfterTax`,
                     priceAfterTax
                   );
                 }}
@@ -132,14 +129,14 @@ const TransactionListForm = ({
               <i>
                 Harga setelah pajak:{' '}
                 {formatCurrencyIDR(
-                  watch('transactionList')?.[transactionIndex]?.priceAfterTax
+                  watch('expenseList')?.[expenseIndex]?.priceAfterTax
                 )}
               </i>
             </div>
 
-            <label>Pembayar</label>
+            <label>Siapa yang bayarin?</label>
             <select
-              {...register(`transactionList.${transactionIndex}.payer.name`)}
+              {...register(`expenseList.${expenseIndex}.payer.name`)}
               defaultValue=""
               style={{ display: 'block' }}
             >
@@ -151,17 +148,16 @@ const TransactionListForm = ({
                 ))}
             </select>
 
-            <label>Penerima</label>
+            <label>Siapa aja yang ikutan?</label>
             {personList?.length &&
               personList.map((person, personIndex) => {
                 const currentTransactionAmout =
-                  getValues('transactionList')?.[transactionIndex]
-                    ?.priceAfterTax || 0;
+                  getValues('expenseList')?.[expenseIndex]?.priceAfterTax || 0;
 
                 const currentReceivers =
-                  watch('transactionList')?.[
-                    transactionIndex
-                  ]?.receiver?.filter((r) => Boolean(r)) || [];
+                  watch('expenseList')?.[expenseIndex]?.receiver?.filter((r) =>
+                    Boolean(r)
+                  ) || [];
 
                 const isChecked = currentReceivers?.includes(person.name);
 
@@ -175,7 +171,7 @@ const TransactionListForm = ({
                   >
                     <input
                       {...register(
-                        `transactionList.${transactionIndex}.receiver.${personIndex}`
+                        `expenseList.${expenseIndex}.receiver.${personIndex}`
                       )}
                       type="checkbox"
                       value={person.name}
@@ -189,7 +185,7 @@ const TransactionListForm = ({
           </div>
           <div>
             {fields.length > 1 && (
-              <button type="button" onClick={() => remove(transactionIndex)}>
+              <button type="button" onClick={() => remove(expenseIndex)}>
                 Hapus
               </button>
             )}
@@ -213,8 +209,14 @@ const TransactionListForm = ({
         Tambah
       </button>
 
-      <button type="submit">Simpan</button>
+      <div>
+        <button type="button" onClick={() => window.history.back()}>
+          Balik edit daftar anggota
+        </button>
+
+        <button type="submit">Selesai</button>
+      </div>
     </form>
   );
 };
-export default TransactionListForm;
+export default ExpenseListForm;
