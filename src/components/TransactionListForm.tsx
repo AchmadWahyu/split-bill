@@ -89,6 +89,9 @@ const TransactionListForm = ({
                   priceAfterTax
                 );
               }}
+              onFocus={(e) => {
+                e.target.select();
+              }}
             />
 
             <label>Pajak (opsional)</label>
@@ -117,6 +120,9 @@ const TransactionListForm = ({
                     `transactionList.${transactionIndex}.priceAfterTax`,
                     priceAfterTax
                   );
+                }}
+                onFocus={(e) => {
+                  e.target.select();
                 }}
               />
               %
