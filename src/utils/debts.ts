@@ -1,4 +1,4 @@
-import { Transaction } from '../components/TransactionListForm';
+import { ExpenseType } from '../routes/ExpenseListForm/types';
 
 type Debt = {
   payer: string;
@@ -16,7 +16,7 @@ type PersonWithDebt = {
 };
 
 function createArrOfDebts(
-  arrTransaction: Transaction[],
+  arrTransaction: ExpenseType[],
   arrPerson: string[]
 ): PersonWithDebt[] {
   return arrPerson.map((person) => {
