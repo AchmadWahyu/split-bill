@@ -10,9 +10,9 @@ const Home = ({ eventList }: { eventList: EventType[] }) => {
     <div>
       <h1>Acara Kamu</h1>
 
-      {!eventList?.length && <p>Belum ada Acara nih</p>}
+      {!eventList.filter((e) => e.id)?.length && <p>Belum ada Acara nih</p>}
 
-      {eventList?.map((event) => (
+      {eventList.map((event) => (
         <div key={event.id}>
           <Link to={`/acara/${event.id}`}>{event.title}</Link>
         </div>
