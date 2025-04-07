@@ -1,18 +1,24 @@
 import { formatCurrencyIDR } from '../utils/currency';
 import { createArrOfDebts, normalizeArrOfDebts } from '../utils/debts';
-import { Person } from './PersonListForm';
-import { Transaction } from './TransactionListForm';
+import { Link, useParams } from 'react-router';
+import { EventType } from './EventForm/types';
 
-const Results = ({
-  personList,
-  transactionList,
-}: {
-  personList: Person[];
-  transactionList: Transaction[];
-}) => {
+const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
+  const { eventId } = useParams();
+
+  const currentEvent = eventList?.find((event) => event.id === eventId);
+
+  const { personList, expenseList } = currentEvent || {
+    personList: [],
+    expenseList: [],
+  };
+
+  if (expenseList.length === 0 || personList.length === 0) {
+    return <h2>Belum ada data</h2>;
+  }
   const personListSToString = personList.map((person) => person.name);
 
-  const arrOfDebts = createArrOfDebts(transactionList, personListSToString);
+  const arrOfDebts = createArrOfDebts(expenseList, personListSToString);
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
 
@@ -68,8 +74,10 @@ const Results = ({
           );
         })}
       </ol>
+
+      <Link to="/">kembali ke home</Link>
     </div>
   );
 };
 
-export default Results;
+export default EventDetailView;
