@@ -74,7 +74,7 @@ const PersonListForm = () => {
             };
 
             handleUpdateEvent(updatedEvent);
-            window.history.back();
+            navigate(`/acara/${eventId}/edit/general`);
           })}
         >
           Balik edit nama acara
