@@ -39,10 +39,25 @@ function App() {
     }
   };
 
+  const handleDeleteEventById = (id: string) => {
+    const updatedEventList = eventList.filter((event) => event.id !== id);
+
+    setEventList(updatedEventList);
+    localStorage.setItem('eventList', JSON.stringify(updatedEventList));
+  };
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home eventList={eventList} />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              eventList={eventList}
+              handleDeleteEventById={handleDeleteEventById}
+            />
+          }
+        />
         <Route path="acara">
           <Route
             path=":eventId"
