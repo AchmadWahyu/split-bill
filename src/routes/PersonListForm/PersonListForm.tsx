@@ -65,7 +65,18 @@ const PersonListForm = () => {
       </button>
 
       <div>
-        <button type="button" onClick={() => window.history.back()}>
+        <button
+          type="button"
+          onClick={handleSubmit((data) => {
+            const updatedEvent = {
+              ...normalizedEventData,
+              personList: data.personList,
+            };
+
+            handleUpdateEvent(updatedEvent);
+            window.history.back();
+          })}
+        >
           Balik edit nama acara
         </button>
 
