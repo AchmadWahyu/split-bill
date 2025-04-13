@@ -2,7 +2,13 @@ import { Link } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
 import { EventType } from './EventForm/types';
 
-const Home = ({ eventList }: { eventList: EventType[] }) => {
+const Home = ({
+  eventList,
+  handleDeleteEventById,
+}: {
+  eventList: EventType[];
+  handleDeleteEventById: (eventId: string) => void;
+}) => {
   const eventId = uuidv4();
   const url = `/acara/${eventId}/edit/general`;
 
@@ -14,7 +20,8 @@ const Home = ({ eventList }: { eventList: EventType[] }) => {
 
       {eventList.map((event) => (
         <div key={event.id}>
-          <Link to={`/acara/${event.id}`}>{event.title}</Link>
+          <Link to={`/acara/${event.id}`}>{event.title}</Link>{' '}
+          <button onClick={() => handleDeleteEventById(event.id)}>Hapus</button>
         </div>
       ))}
 
