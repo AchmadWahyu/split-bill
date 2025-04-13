@@ -8,6 +8,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
 
   const currentEvent = eventList?.find((event) => event.id === eventId);
+  console.log("AAA currentEvent: ", currentEvent)
   
   const { personList, expense } = currentEvent || eventDefaultValues;
 
@@ -21,6 +22,10 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const arrOfDebts = createArrOfDebts(expense, personListSToString);
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
+  console.log("AAA : ", {
+    arrOfDebts,
+    finalResults
+  })
 
   return (
     <div>

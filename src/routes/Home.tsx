@@ -1,5 +1,4 @@
 import { Link } from 'react-router';
-import { v4 as uuidv4 } from 'uuid';
 import { EventType } from './EventForm/types';
 
 const Home = ({
@@ -9,7 +8,7 @@ const Home = ({
   eventList: EventType[];
   handleDeleteEventById: (eventId: string) => void;
 }) => {
-  const eventId = uuidv4();
+  const eventId = crypto.randomUUID();
   const url = `/acara/${eventId}/edit/general`;
 
   return (
