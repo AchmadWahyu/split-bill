@@ -9,8 +9,6 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
 
   const currentEvent = eventList?.find((event) => event.id === eventId);
   
-  console.log("AAA currentEvent: ", currentEvent)
-
   const { personList, expense } = currentEvent || eventDefaultValues;
 
   const expenseItems = expense?.items;
@@ -21,8 +19,6 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const personListSToString = personList.map((person) => person.name);
 
   const arrOfDebts = createArrOfDebts(expense, personListSToString);
-  
-  console.log("AAA arrOfDebts", arrOfDebts)
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
 
