@@ -17,7 +17,7 @@ const ExpenseListForm = ({
 }) => {
   const navigate = useNavigate();
   const { eventId } = useParams();
-  const { event } = useOutletContext<EditEventContextType>();
+  const { event, handleUpdateEvent } = useOutletContext<EditEventContextType>();
 
   const normalizedEventData = normalizeEventData(event);
 
@@ -204,7 +204,18 @@ const ExpenseListForm = ({
       </div>
 
       <div>
-        <button type="button" onClick={() => window.history.back()}>
+        <button
+          type="button"
+          onClick={handleSubmit((data) => {
+            const updatedEvent = {
+              ...normalizedEventData,
+              expense: data.expense,
+            };
+            
+            handleUpdateEvent(updatedEvent);
+            window.history.back();
+          })}
+        >
           Balik edit daftar anggota
         </button>
 
