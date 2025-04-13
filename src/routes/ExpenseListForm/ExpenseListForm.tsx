@@ -213,7 +213,7 @@ const ExpenseListForm = ({
             };
             
             handleUpdateEvent(updatedEvent);
-            window.history.back();
+            navigate(`/acara/${eventId}/edit/anggota`);
           })}
         >
           Balik edit daftar anggota
