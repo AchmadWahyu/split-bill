@@ -5,5 +5,5 @@ export type EventType = {
   id: string;
   title: string;
   personList: PersonType[];
-  expenseList: ExpenseType[];
+  expense: ExpenseType;
 };
