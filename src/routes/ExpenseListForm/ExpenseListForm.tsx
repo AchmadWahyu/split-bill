@@ -7,7 +7,7 @@ import { normalizeEventData } from '../../utils/normalizer';
 import { EventType } from '../EventForm/types';
 
 type ExpenseListFormValues = {
-  expenseList: ExpenseType[];
+  expense: ExpenseType;
 };
 
 const ExpenseListForm = ({
@@ -21,18 +21,18 @@ const ExpenseListForm = ({
 
   const normalizedEventData = normalizeEventData(event);
 
-  const { personList, expenseList } = normalizedEventData;
+  const { personList, expense } = normalizedEventData;
 
-  const { register, handleSubmit, control, getValues, watch, setValue } =
+  const { register, handleSubmit, control, getValues, watch } =
     useForm<ExpenseListFormValues>({
       defaultValues: {
-        expenseList,
+        expense,
       },
     });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'expenseList',
+    name: 'expense.items',
   });
 
   return (
@@ -40,7 +40,7 @@ const ExpenseListForm = ({
       onSubmit={handleSubmit((data) => {
         const updatedEvent = {
           ...normalizedEventData,
-          expenseList: data.expenseList,
+          expense: data.expense,
         };
 
         handleUpdateEventById(updatedEvent);
@@ -49,7 +49,7 @@ const ExpenseListForm = ({
     >
       <h2>Catat Pengeluaran</h2>
 
-      {fields.map((field, expenseIndex) => (
+      {fields.map((field, expenseItemIndex) => (
         <div
           key={field.id}
           style={{
@@ -67,7 +67,7 @@ const ExpenseListForm = ({
           >
             <label>Apa yang dibeli?</label>
             <input
-              {...register(`expenseList.${expenseIndex}.title`)}
+              {...register(`expense.items.${expenseItemIndex}.title`)}
               placeholder="contoh: Bakso"
               style={{ display: 'block' }}
               defaultValue={field.title}
@@ -75,68 +75,20 @@ const ExpenseListForm = ({
 
             <label>Berapa harganya?</label>
             <input
-              {...register(`expenseList.${expenseIndex}.priceBeforeTax`)}
+              {...register(`expense.items.${expenseItemIndex}.price`)}
               placeholder="Contoh: 10000"
               style={{ display: 'block' }}
               type="number"
-              defaultValue={field.priceBeforeTax}
-              onChange={(e) => {
-                const userInput = Number(e.target.value);
-                const tax = watch('expenseList')?.[expenseIndex]?.tax || 0;
-
-                const priceAfterTax = userInput + (userInput * tax) / 100;
-
-                setValue(
-                  `expenseList.${expenseIndex}.priceAfterTax`,
-                  priceAfterTax
-                );
-              }}
+              defaultValue={field.price}
               onFocus={(e) => {
                 e.target.select();
               }}
             />
 
-            <label>Pajak (opsional)</label>
-            <div>
-              <input
-                {...register(`expenseList.${expenseIndex}.tax`)}
-                placeholder="Eg: 11"
-                type="number"
-                defaultValue={field.tax}
-                onChange={(e) => {
-                  const userInput = Number(e.target.value ?? 0);
-                  const priceBeforeTax =
-                    watch('expenseList')?.[expenseIndex]?.priceBeforeTax || 0;
-
-                  const priceAfterTax =
-                    Number(priceBeforeTax) +
-                    (Number(priceBeforeTax) * userInput) / 100;
-
-                  setValue(
-                    `expenseList.${expenseIndex}.priceAfterTax`,
-                    priceAfterTax
-                  );
-                }}
-                onFocus={(e) => {
-                  e.target.select();
-                }}
-              />
-              %
-            </div>
-
-            <div>
-              <i>
-                Harga setelah pajak:{' '}
-                {formatCurrencyIDR(
-                  watch('expenseList')?.[expenseIndex]?.priceAfterTax
-                )}
-              </i>
-            </div>
-
             <label>Siapa yang bayarin?</label>
             <select
-              {...register(`expenseList.${expenseIndex}.payer.name`)}
-              defaultValue=""
+              {...register(`expense.items.${expenseItemIndex}.payer.name`)}
+              defaultValue={personList?.[0]?.name}
               style={{ display: 'block' }}
             >
               {personList?.length &&
@@ -150,18 +102,18 @@ const ExpenseListForm = ({
             <label>Siapa aja yang ikutan?</label>
             {personList?.length &&
               personList.map((person, personIndex) => {
-                const currentTransactionAmout =
-                  getValues('expenseList')?.[expenseIndex]?.priceAfterTax || 0;
+                const currentExpenseTotalPrice =
+                  getValues('expense.items')?.[expenseItemIndex]?.price || 0;
 
                 const currentReceivers =
-                  watch('expenseList')?.[expenseIndex]?.receiver?.filter((r) =>
-                    Boolean(r)
+                  watch('expense.items')?.[expenseItemIndex]?.receiver?.filter(
+                    (r) => Boolean(r)
                   ) || [];
 
                 const isChecked = currentReceivers?.includes(person.name);
 
                 const averagePrice =
-                  currentTransactionAmout / currentReceivers.length || 0;
+                  currentExpenseTotalPrice / currentReceivers.length || 0;
 
                 return (
                   <label
@@ -170,7 +122,7 @@ const ExpenseListForm = ({
                   >
                     <input
                       {...register(
-                        `expenseList.${expenseIndex}.receiver.${personIndex}`
+                        `expense.items.${expenseItemIndex}.receiver.${personIndex}`
                       )}
                       type="checkbox"
                       value={person.name}
@@ -184,7 +136,7 @@ const ExpenseListForm = ({
           </div>
           <div>
             {fields.length > 1 && (
-              <button type="button" onClick={() => remove(expenseIndex)}>
+              <button type="button" onClick={() => remove(expenseItemIndex)}>
                 Hapus
               </button>
             )}
@@ -194,12 +146,11 @@ const ExpenseListForm = ({
 
       <button
         type="button"
+        style={{ display: 'block' }}
         onClick={() =>
           append({
             title: '',
-            priceBeforeTax: 0,
-            priceAfterTax: 0,
-            tax: 0,
+            price: 0,
             payer: { name: '' },
             receiver: [''],
           })
@@ -207,6 +158,50 @@ const ExpenseListForm = ({
       >
         Tambah
       </button>
+
+      <div
+        style={{
+          border: '1px solid black',
+          padding: '10px',
+          marginBottom: '10px',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <label>Pake pajak ngga?</label>
+        <input
+          {...register(`expense.tax`)}
+          style={{ display: 'block' }}
+          defaultValue={expense.tax}
+          type="number"
+          onFocus={(e) => {
+            e.target.select();
+          }}
+        />
+        %
+      </div>
+
+      <div
+        style={{
+          border: '1px solid black',
+          padding: '10px',
+          marginBottom: '10px',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <label>Ada diskonnya?</label>
+        Rp.
+        <input
+          {...register(`expense.discount`)}
+          style={{ display: 'block' }}
+          defaultValue={expense.discount}
+          type="number"
+          onFocus={(e) => {
+            e.target.select();
+          }}
+        />
+      </div>
 
       <div>
         <button type="button" onClick={() => window.history.back()}>

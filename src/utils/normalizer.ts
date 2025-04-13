@@ -1,14 +1,24 @@
 import { eventDefaultValues } from '../routes/EventForm/defaultValues';
 import { EventType } from '../routes/EventForm/types';
-import { expenseDefaultValues } from '../routes/ExpenseListForm/defaultValues';
+import { itemDefaultValues } from '../routes/ExpenseListForm/defaultValues';
 import { personDefaultValues } from '../routes/PersonListForm/defaultValues';
 
-export const normalizeEventData = (event: EventType | undefined) => {
+export const normalizeEventData = (event: EventType | undefined): EventType => {
   return {
     id: event?.id || '',
     title: event?.title || '',
-    personList: event?.personList || [personDefaultValues],
-    expenseList: event?.expenseList || [expenseDefaultValues],
+    personList:
+      !event?.personList || event?.personList?.length === 0
+        ? [personDefaultValues]
+        : event?.personList,
+    expense: {
+      items:
+        !event?.expense?.items || event?.expense?.items?.length === 0
+          ? [itemDefaultValues]
+          : event?.expense?.items,
+      tax: event?.expense?.tax || 0,
+      discount: event?.expense?.discount || 0,
+    },
   };
 };
 

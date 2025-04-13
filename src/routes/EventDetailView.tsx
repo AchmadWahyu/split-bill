@@ -2,33 +2,37 @@ import { formatCurrencyIDR } from '../utils/currency';
 import { createArrOfDebts, normalizeArrOfDebts } from '../utils/debts';
 import { Link, useParams } from 'react-router';
 import { EventType } from './EventForm/types';
+import { eventDefaultValues } from './EventForm/defaultValues';
 
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
 
   const currentEvent = eventList?.find((event) => event.id === eventId);
+  
+  console.log("AAA currentEvent: ", currentEvent)
 
-  const { personList, expenseList } = currentEvent || {
-    personList: [],
-    expenseList: [],
-  };
+  const { personList, expense } = currentEvent || eventDefaultValues;
 
-  if (expenseList.length === 0 || personList.length === 0) {
+  const expenseItems = expense?.items;
+
+  if (expenseItems?.length === 0 || personList?.length === 0) {
     return <h2>Belum ada data</h2>;
   }
   const personListSToString = personList.map((person) => person.name);
 
-  const arrOfDebts = createArrOfDebts(expenseList, personListSToString);
+  const arrOfDebts = createArrOfDebts(expense, personListSToString);
+  
+  console.log("AAA arrOfDebts", arrOfDebts)
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
-  
+
   return (
     <div>
       <h2>Hasil</h2>
 
       <ol style={{ paddingLeft: 0 }}>
         {finalResults.map((person, personIndex) => {
-          const filteredDebt = person.debt.filter((d) => d?.totalDebtAfterTax);
+          const filteredDebt = person.debt.filter((d) => d?.totalDebtAfterDiscountAndTax);
 
           if (!filteredDebt?.length) return null;
 
@@ -51,7 +55,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
                     return (
                       <li key={debt.payer}>
                         <b>{debt.payer}</b>:{' '}
-                        {formatCurrencyIDR(debt.totalDebtAfterTax)}
+                        {formatCurrencyIDR(debt.totalDebtAfterDiscountAndTax)}
                         <ul>
                           {debt.transactions.map(
                             (transaction, transactionIndex) => (
@@ -60,7 +64,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
                                 style={{ color: '#737373' }}
                               >
                                 {transaction.title} -{' '}
-                                {formatCurrencyIDR(transaction.debtAfterTax)}
+                                {formatCurrencyIDR(transaction.debtAfterDiscountAndTax)}
                               </li>
                             )
                           )}

@@ -1,11 +1,15 @@
 import { personDefaultValues } from '../PersonListForm/defaultValues';
-import { ExpenseType } from './types';
+import { ExpenseType, ItemType } from './types';
 
-export const expenseDefaultValues: ExpenseType = {
+export const itemDefaultValues: ItemType = {
   title: '',
-  priceBeforeTax: 0,
-  priceAfterTax: 0,
-  tax: 0,
+  price: 0,
   payer: personDefaultValues,
   receiver: [''],
+};
+
+export const expenseDefaultValues: ExpenseType = {
+  items: [itemDefaultValues],
+  tax: 0,
+  discount: 0,
 };
