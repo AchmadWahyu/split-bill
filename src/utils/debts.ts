@@ -2,11 +2,11 @@ import { ExpenseType } from '../routes/ExpenseListForm/types';
 
 type Debt = {
   payer: string;
-  totalDebtAfterTax: number;
+  totalDebtAfterDiscountAndTax: number;
   surplus: number;
   transactions: {
     title: string;
-    debtAfterTax: number;
+    debtAfterDiscountAndTax: number;
   }[];
 };
 
@@ -16,13 +16,15 @@ type PersonWithDebt = {
 };
 
 function createArrOfDebts(
-  arrTransaction: ExpenseType[],
+  expenseData: ExpenseType,
   arrPerson: string[]
 ): PersonWithDebt[] {
+  const { items, discount, tax } = expenseData;
+
   return arrPerson.map((person) => {
     let arrDebts: Debt[] = [];
 
-    arrTransaction.forEach((transaction) => {
+    items.forEach((transaction) => {
       // check if person is not payer but includes as receiver
       if (
         transaction.payer.name !== person &&
@@ -32,9 +34,21 @@ function createArrOfDebts(
           (debt) => debt.payer === transaction.payer.name
         );
 
-        const averagedebtAfterTaxForEachPerson =
-          transaction.priceAfterTax /
-          transaction.receiver?.filter((r) => Boolean(r))?.length;
+        const totalReceivers = transaction.receiver?.filter((r) =>
+          Boolean(r)
+        )?.length;
+
+        const discountPerItemPerPerson =
+          discount / items.length / totalReceivers;
+
+        const pricePerPerson = transaction.price / totalReceivers;
+
+        const pricePerPersonAfterDiscount =
+          pricePerPerson - discountPerItemPerPerson;
+
+        const debtAfterDiscountAndTax =
+          pricePerPersonAfterDiscount +
+          (pricePerPersonAfterDiscount * tax) / 100;
 
         // if there is another transaction with the same payer, update the total price and add the transaction to the list
         if (anotherTransactionWithTheSamePayer) {
@@ -44,14 +58,14 @@ function createArrOfDebts(
 
           const newUpdatedDebt = {
             ...anotherTransactionWithTheSamePayer,
-            totalDebtAfterTax:
-              anotherTransactionWithTheSamePayer.totalDebtAfterTax +
-              averagedebtAfterTaxForEachPerson,
+            totalDebtAfterDiscountAndTax:
+              anotherTransactionWithTheSamePayer.totalDebtAfterDiscountAndTax +
+              debtAfterDiscountAndTax,
             transactions: [
               ...anotherTransactionWithTheSamePayer.transactions,
               {
                 title: transaction.title,
-                debtAfterTax: averagedebtAfterTaxForEachPerson,
+                debtAfterDiscountAndTax,
               },
             ],
           };
@@ -61,12 +75,12 @@ function createArrOfDebts(
           // if not, create a new debt
           arrDebts.push({
             payer: transaction.payer.name,
-            totalDebtAfterTax: averagedebtAfterTaxForEachPerson,
+            totalDebtAfterDiscountAndTax: debtAfterDiscountAndTax,
             surplus: 0,
             transactions: [
               {
                 title: transaction.title,
-                debtAfterTax: averagedebtAfterTaxForEachPerson,
+                debtAfterDiscountAndTax,
               },
             ],
           });
@@ -96,24 +110,25 @@ function normalizeArrOfDebts(personWithDebts: PersonWithDebt[]) {
           (payerDebt) => payerDebt.payer === person.name
         );
 
-        const currentPayerDebt = currentPayerDebtData?.totalDebtAfterTax || 0;
+        const currentPayerDebt =
+          currentPayerDebtData?.totalDebtAfterDiscountAndTax || 0;
 
         const surplusInPayerCurrentDebt =
-          currentPayerDebt > currentPersonDebt.totalDebtAfterTax;
+          currentPayerDebt > currentPersonDebt.totalDebtAfterDiscountAndTax;
 
         if (surplusInPayerCurrentDebt) {
           // hilangkan hutang dari current person ke payer
           return {
             ...currentPersonDebt,
-            totalDebtAfterTax: 0,
+            totalDebtAfterDiscountAndTax: 0,
             transactions: [],
           };
         } else {
           // tambah surplus dari payer ke current person
           return {
             ...currentPersonDebt,
-            totalDebtAfterTax:
-              currentPersonDebt.totalDebtAfterTax - currentPayerDebt,
+            totalDebtAfterDiscountAndTax:
+              currentPersonDebt.totalDebtAfterDiscountAndTax - currentPayerDebt,
             surplus: currentPayerDebt,
           };
         }
