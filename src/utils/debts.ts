@@ -24,6 +24,11 @@ function createArrOfDebts(
   return arrPerson.map((person) => {
     let arrDebts: Debt[] = [];
 
+    const expensesPrice = items.map((item) => item.price);
+    const totalExpense = expensesPrice.reduce(
+      (prev, curr) => Number(prev) + Number(curr)
+    );
+
     items.forEach((transaction) => {
       // check if person is not payer but includes as receiver
       if (
@@ -38,13 +43,17 @@ function createArrOfDebts(
           Boolean(r)
         )?.length;
 
-        const discountPerItemPerPerson =
-          discount / items.length / totalReceivers;
+        // count the ratio of current transaction price to total expense (before discount & tax)
+        const ratioTransactionPriceToTotalExpense =
+          transaction.price / totalExpense;
 
-        const pricePerPerson = transaction.price / totalReceivers;
+        const discountToTransactionRatio =
+          ratioTransactionPriceToTotalExpense * discount;
 
-        const pricePerPersonAfterDiscount =
-          pricePerPerson - discountPerItemPerPerson;
+        const priceAfterDiscount =
+          transaction.price - discountToTransactionRatio;
+
+        const pricePerPersonAfterDiscount = priceAfterDiscount / totalReceivers;
 
         const debtAfterDiscountAndTax =
           pricePerPersonAfterDiscount +
