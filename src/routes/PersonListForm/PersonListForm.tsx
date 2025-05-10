@@ -59,10 +59,10 @@ const PersonListForm = () => {
                 {...register(`personList.${index}.name`)}
                 placeholder="Masukin nama temen kamu..."
                 defaultValue={field.name}
-                className="w-3/4 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
               />
 
-              {index !== fields?.length - 1 && (
+              {fields?.length > 1 && (
                 <Button
                   type="button"
                   onClick={() => remove(index)}
@@ -71,18 +71,16 @@ const PersonListForm = () => {
                   Hapus
                 </Button>
               )}
-
-              {index === fields?.length - 1 && (
-                <Button
-                  type="button"
-                  onClick={() => append({ name: '' })}
-                  className="grow-1 bg-primary hover:bg-primary-variant text-white"
-                >
-                  Tambah
-                </Button>
-              )}
             </div>
           ))}
+
+          <Button
+            type="button"
+            onClick={() => append({ name: '' })}
+            className="grow-1 bg-primary hover:bg-primary-variant text-white"
+          >
+            Tambah anggota baru
+          </Button>
         </div>
 
         <BottomNav
