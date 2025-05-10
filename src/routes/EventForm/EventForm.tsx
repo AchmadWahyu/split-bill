@@ -18,7 +18,7 @@ const EventForm = () => {
   });
 
   return (
-    <main className="p-8 max-w-lg mx-auto">
+    <main className="p-8 max-w-lg mx-auto h-dvh flex flex-col justify-center content-center">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">
           Kasih Nama Acaranya
