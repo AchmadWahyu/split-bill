@@ -1,6 +1,6 @@
 import { ExpenseType } from '../routes/ExpenseListForm/types';
 
-type Debt = {
+export type Debt = {
   payer: string;
   totalDebtAfterDiscountAndTax: number;
   surplus: number;
@@ -10,9 +10,9 @@ type Debt = {
   }[];
 };
 
-type PersonWithDebt = {
+export type PersonWithDebt = {
   name: string;
-  debt: Debt[];
+  debts: Debt[];
 };
 
 function createArrOfDebts(
@@ -99,50 +99,55 @@ function createArrOfDebts(
 
     return {
       name: person,
-      debt: arrDebts,
+      debts: arrDebts,
     };
   });
 }
 
-function normalizeArrOfDebts(personWithDebts: PersonWithDebt[]) {
+function normalizeArrOfDebts(
+  personWithDebts: PersonWithDebt[]
+): PersonWithDebt[] {
   return personWithDebts.map((person) => ({
     ...person,
-    debt: person.debt.map((currentPersonDebt) => {
-      // cek apakah pembayar di transaksi ini punya hutang juga
-      const payerCurrentDebtData = personWithDebts.find(
-        (p) => p.name === currentPersonDebt.payer
-      );
-
-      // cek apakah nama current person ada di list sebagai payer di list debts pembayar transaksi ini
-      if (payerCurrentDebtData) {
-        const currentPayerDebtData = payerCurrentDebtData?.debt?.find(
-          (payerDebt) => payerDebt.payer === person.name
+    debts: person.debts
+      .map((currentPersonDebt) => {
+        // cek apakah pembayar di transaksi ini punya hutang juga
+        const payerCurrentDebtData = personWithDebts.find(
+          (p) => p.name === currentPersonDebt.payer
         );
 
-        const currentPayerDebt =
-          currentPayerDebtData?.totalDebtAfterDiscountAndTax || 0;
+        // cek apakah nama current person ada di list sebagai payer di list debts pembayar transaksi ini
+        if (payerCurrentDebtData) {
+          const currentPayerDebtData = payerCurrentDebtData?.debts?.find(
+            (payerDebt) => payerDebt.payer === person.name
+          );
 
-        const surplusInPayerCurrentDebt =
-          currentPayerDebt > currentPersonDebt.totalDebtAfterDiscountAndTax;
+          const currentPayerDebt =
+            currentPayerDebtData?.totalDebtAfterDiscountAndTax || 0;
 
-        if (surplusInPayerCurrentDebt) {
-          // hilangkan hutang dari current person ke payer
-          return {
-            ...currentPersonDebt,
-            totalDebtAfterDiscountAndTax: 0,
-            transactions: [],
-          };
-        } else {
-          // tambah surplus dari payer ke current person
-          return {
-            ...currentPersonDebt,
-            totalDebtAfterDiscountAndTax:
-              currentPersonDebt.totalDebtAfterDiscountAndTax - currentPayerDebt,
-            surplus: currentPayerDebt,
-          };
+          const surplusInPayerCurrentDebt =
+            currentPayerDebt > currentPersonDebt.totalDebtAfterDiscountAndTax;
+
+          if (surplusInPayerCurrentDebt) {
+            // hilangkan hutang dari current person ke payer
+            return {
+              ...currentPersonDebt,
+              totalDebtAfterDiscountAndTax: 0,
+              transactions: [],
+            };
+          } else {
+            // tambah surplus dari payer ke current person
+            return {
+              ...currentPersonDebt,
+              totalDebtAfterDiscountAndTax:
+                currentPersonDebt.totalDebtAfterDiscountAndTax -
+                currentPayerDebt,
+              surplus: currentPayerDebt,
+            };
+          }
         }
-      }
-    }),
+      })
+      .filter((debt) => debt !== undefined),
   }));
 }
 

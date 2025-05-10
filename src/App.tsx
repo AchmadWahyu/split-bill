@@ -5,7 +5,7 @@ import PersonListForm from './routes/PersonListForm/PersonListForm';
 import ExpenseListForm from './routes/ExpenseListForm/ExpenseListForm';
 import { useState } from 'react';
 import { EventType } from './routes/EventForm/types';
-import EventDetailView from './routes/EventDetailView';
+import EventDetailView from './routes/EventDetailView/EventDetailView';
 import EventFormLayout from './routes/EventFormLayout';
 import { normalizeEventListData } from './utils/normalizer';
 
