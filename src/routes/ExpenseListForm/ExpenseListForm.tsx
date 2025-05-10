@@ -96,6 +96,7 @@ const ExpenseListForm = ({
                 placeholder="contoh: Bakso"
                 defaultValue={field.title}
                 className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-4"
+                autoFocus
               />
             </CardContent>
 
