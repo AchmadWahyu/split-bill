@@ -60,6 +60,7 @@ const PersonListForm = () => {
                 placeholder="Masukin nama temen kamu..."
                 defaultValue={field.name}
                 className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                autoFocus
               />
 
               {fields?.length > 1 && (

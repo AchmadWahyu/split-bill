@@ -36,6 +36,7 @@ const EventForm = () => {
           {...register('title')}
           placeholder="Contoh: Makan Siang Jumat, Arisan, Nonton Bareng"
           className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+          autoFocus
         />
 
         <BottomNav
