@@ -18,6 +18,13 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { BottomNav } from '@/components/BottomNav';
+import { ErrorMessageForm } from '@/components/ErrorMessageForm';
+import {
+  ERROR_MESSAGE_MIN_RP_0,
+  ERROR_MESSAGE_MIN_RP_1,
+  ERROR_MESSAGE_MIN_TAX,
+  ERROR_MESSAGE_REQUIRED,
+} from '@/constants/forms';
 
 type ExpenseListFormValues = {
   expense: ExpenseType;
@@ -36,17 +43,25 @@ const ExpenseListForm = ({
 
   const { personList, expense } = normalizedEventData;
 
-  const { register, handleSubmit, control, getValues, watch } =
-    useForm<ExpenseListFormValues>({
-      defaultValues: {
-        expense,
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    control,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useForm<ExpenseListFormValues>({
+    defaultValues: {
+      expense,
+    },
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'expense.items',
   });
+
+  const expenseError = errors?.expense;
 
   return (
     <main className="relative min-h-screen bg-slate-50 items-center justify-center p-8">
@@ -68,137 +83,171 @@ const ExpenseListForm = ({
         })}
         className="w-full max-w-md"
       >
-        {fields.map((field, expenseItemIndex) => (
-          <Card
-            key={field.id}
-            className="bg-white border-slate-200 shadow-sm mt-4"
-          >
-            <CardContent>
-              <div className="flex justify-between">
+        {fields.map((field, expenseItemIndex) => {
+          const errorItem = errors?.expense?.items?.[expenseItemIndex];
+
+          return (
+            <Card
+              key={field.id}
+              className="bg-white border-slate-200 shadow-sm mt-4"
+            >
+              <CardContent>
+                <div className="flex justify-between">
+                  <label className="text-slate-900 font-semibold">
+                    Apa yang dibeli?
+                  </label>
+
+                  {fields.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-red-600 bg-white border-red-600 hover:bg-white hover:border-red-400 hover:text-red-400 ml-2"
+                      onClick={() => remove(expenseItemIndex)}
+                    >
+                      <Trash2 className="h-4 w-4 " />
+                      <span className="sr-only">Hapus</span>
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  {...register(`expense.items.${expenseItemIndex}.title`, {
+                    required: {
+                      value: true,
+                      message: ERROR_MESSAGE_REQUIRED,
+                    },
+                  })}
+                  placeholder="contoh: Bakso"
+                  defaultValue={field.title}
+                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-4"
+                  autoFocus
+                />
+
+                {errorItem?.title?.message && (
+                  <ErrorMessageForm text={errorItem?.title?.message || ''} />
+                )}
+              </CardContent>
+
+              <CardContent>
                 <label className="text-slate-900 font-semibold">
-                  Apa yang dibeli?
+                  Berapa Harganya?
+                </label>
+                <Input
+                  {...register(`expense.items.${expenseItemIndex}.price`, {
+                    min: {
+                      value: 1,
+                      message: ERROR_MESSAGE_MIN_RP_1,
+                    },
+                  })}
+                  placeholder="Contoh: 10000"
+                  type="number"
+                  defaultValue={field.price}
+                  onFocus={(e) => {
+                    e.target.select();
+                  }}
+                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-2"
+                />
+
+                {errorItem?.price && (
+                  <ErrorMessageForm text={errorItem?.price?.message || ''} />
+                )}
+              </CardContent>
+
+              <CardContent>
+                <label className="text-slate-900 font-semibold">
+                  Siapa yang bayarin?
                 </label>
 
-                {fields.length > 1 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-red-600 bg-white border-red-600 hover:bg-white hover:border-red-400 hover:text-red-400 ml-2"
-                    onClick={() => remove(expenseItemIndex)}
-                  >
-                    <Trash2 className="h-4 w-4 " />
-                    <span className="sr-only">Hapus</span>
-                  </Button>
+                <Controller
+                  name={`expense.items.${expenseItemIndex}.payer.name`}
+                  control={control}
+                  rules={{
+                    required: {
+                      value: true,
+                      message: ERROR_MESSAGE_REQUIRED,
+                    },
+                  }}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      defaultValue={personList?.[0]?.name}
+                    >
+                      <SelectTrigger className="bg-white border-slate-200 text-slate-900 w-full">
+                        <SelectValue placeholder="Pilih anggota" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-slate-200 text-slate-900">
+                        {personList.map((person) => (
+                          <SelectItem
+                            key={person.name}
+                            value={person.name}
+                            className="hover:bg-slate-100"
+                          >
+                            {person.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+
+                {errorItem?.payer?.name && (
+                  <ErrorMessageForm
+                    text={errorItem?.payer?.name?.message || ''}
+                  />
                 )}
-              </div>
-              <Input
-                {...register(`expense.items.${expenseItemIndex}.title`)}
-                placeholder="contoh: Bakso"
-                defaultValue={field.title}
-                className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-4"
-                autoFocus
-              />
-            </CardContent>
+              </CardContent>
 
-            <CardContent>
-              <label className="text-slate-900 font-semibold">
-                Berapa Harganya?
-              </label>
-              <Input
-                {...register(`expense.items.${expenseItemIndex}.price`)}
-                placeholder="Contoh: 10000"
-                type="number"
-                defaultValue={field.price}
-                onFocus={(e) => {
-                  e.target.select();
-                }}
-                className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-2"
-              />
-            </CardContent>
+              <CardContent>
+                <label className="text-slate-900 font-semibold">
+                  Siapa aja yang ikutan?
+                </label>
 
-            <CardContent>
-              <label className="text-slate-900 font-semibold">
-                Siapa yang bayarin?
-              </label>
+                <div className="mt-2 flex flex-col gap-2">
+                  {personList?.length &&
+                    personList.map((person, personIndex) => {
+                      const currentExpenseTotalPrice =
+                        getValues('expense.items')?.[expenseItemIndex]?.price ||
+                        0;
 
-              <Controller
-                name={`expense.items.${expenseItemIndex}.payer.name`}
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    defaultValue={personList?.[0]?.name}
-                  >
-                    <SelectTrigger className="bg-white border-slate-200 text-slate-900 w-full">
-                      <SelectValue placeholder="Pilih anggota" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white border-slate-200 text-slate-900">
-                      {personList.map((person) => (
-                        <SelectItem
-                          key={person.name}
-                          value={person.name}
-                          className="hover:bg-slate-100"
-                        >
-                          {person.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </CardContent>
+                      const currentReceivers =
+                        watch('expense.items')?.[
+                          expenseItemIndex
+                        ]?.receiver?.filter((r) => Boolean(r)) || [];
 
-            <CardContent>
-              <label className="text-slate-900 font-semibold">
-                Siapa aja yang ikutan?
-              </label>
+                      const isChecked = currentReceivers?.includes(person.name);
 
-              <div className="mt-2 flex flex-col gap-2">
-                {personList?.length &&
-                  personList.map((person, personIndex) => {
-                    const currentExpenseTotalPrice =
-                      getValues('expense.items')?.[expenseItemIndex]?.price ||
-                      0;
+                      const averagePrice =
+                        currentExpenseTotalPrice / currentReceivers.length || 0;
 
-                    const currentReceivers =
-                      watch('expense.items')?.[
-                        expenseItemIndex
-                      ]?.receiver?.filter((r) => Boolean(r)) || [];
-
-                    const isChecked = currentReceivers?.includes(person.name);
-
-                    const averagePrice =
-                      currentExpenseTotalPrice / currentReceivers.length || 0;
-
-                    return (
-                      <label key={personIndex} className="flex items-center">
-                        <Controller
-                          name={`expense.items.${expenseItemIndex}.receiver.${personIndex}`}
-                          control={control}
-                          render={({ field }) => (
-                            <Checkbox
-                              checked={isChecked}
-                              onCheckedChange={(checked) => {
-                                field.onChange(checked ? person.name : '');
-                              }}
-                              defaultValue={field.value || ''}
-                              value={field.value || ''}
-                              className="border-slate-300 data-[state=checked]:bg-primary"
-                            />
+                      return (
+                        <label key={personIndex} className="flex items-center">
+                          <Controller
+                            name={`expense.items.${expenseItemIndex}.receiver.${personIndex}`}
+                            control={control}
+                            render={({ field }) => (
+                              <Checkbox
+                                checked={isChecked}
+                                onCheckedChange={(checked) => {
+                                  field.onChange(checked ? person.name : '');
+                                }}
+                                defaultValue={field.value || ''}
+                                value={field.value || ''}
+                                className="border-slate-300 data-[state=checked]:bg-primary"
+                              />
+                            )}
+                          />
+                          <span className="mx-2">{person.name}</span>
+                          {isChecked && (
+                            <b> - {formatCurrencyIDR(averagePrice)}</b>
                           )}
-                        />
-                        <span className="mx-2">{person.name}</span>
-                        {isChecked && (
-                          <b> - {formatCurrencyIDR(averagePrice)}</b>
-                        )}
-                      </label>
-                    );
-                  })}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                        </label>
+                      );
+                    })}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
 
         <Button
           className="w-full bg-primary hover:bg-primary-variant hover:bg-slate-800 text-white mt-4 h-12"
@@ -217,20 +266,37 @@ const ExpenseListForm = ({
         </Button>
 
         <Card className="bg-white border-slate-200 shadow-sm mt-4">
-          <CardContent className="flex items-center">
-            <label className="text-slate-900 font-semibold shrink-0">
-              Pake pajak ngga?
-            </label>
-            <Input
-              className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 ml-4 mr-2"
-              type="number"
-              {...register('expense.tax')}
-              onFocus={(e) => {
-                e.target.select();
-              }}
-              defaultValue={expense.tax}
-            />
-            <span>%</span>
+          <CardContent>
+            <div className="flex items-center">
+              <label className="text-slate-900 font-semibold shrink-0">
+                Pake pajak ngga?
+              </label>
+              <div>
+                <div className="flex items-center">
+                  <Input
+                    className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 ml-4 mr-2"
+                    type="number"
+                    {...register('expense.tax', {
+                      min: {
+                        value: 0,
+                        message: ERROR_MESSAGE_MIN_TAX,
+                      },
+                    })}
+                    onFocus={(e) => {
+                      e.target.select();
+                    }}
+                    defaultValue={expense.tax}
+                  />
+                  <span>%</span>
+                </div>
+                {expenseError?.tax?.message && (
+                  <ErrorMessageForm
+                    className="ml-4"
+                    text={expenseError?.tax?.message || ''}
+                  />
+                )}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -239,16 +305,31 @@ const ExpenseListForm = ({
             <label className="text-slate-900 font-semibold shrink-0">
               Ada diskonnya?
             </label>
-            <span>Rp.</span>
-            <Input
-              className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
-              type="number"
-              {...register('expense.discount')}
-              onFocus={(e) => {
-                e.target.select();
-              }}
-              defaultValue={expense.discount}
-            />
+            <div className="flex items-center gap-4">
+              <span>Rp</span>
+              <div>
+                <Input
+                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                  type="number"
+                  {...register('expense.discount', {
+                    min: {
+                      value: 0,
+                      message: ERROR_MESSAGE_MIN_RP_0,
+                    },
+                  })}
+                  onFocus={(e) => {
+                    e.target.select();
+                  }}
+                  defaultValue={expense.discount}
+                />
+                {expenseError?.discount?.message && (
+                  <ErrorMessageForm
+                    className="ml-4"
+                    text={expenseError?.discount?.message || ''}
+                  />
+                )}
+              </div>
+            </div>
           </CardContent>
         </Card>
 

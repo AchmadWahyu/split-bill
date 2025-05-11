@@ -6,6 +6,11 @@ import { normalizeEventData } from '../../utils/normalizer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/BottomNav';
+import { ErrorMessageForm } from '@/components/ErrorMessageForm';
+import {
+  ERROR_MESSAGE_NAME_DUPLICATE,
+  ERROR_MESSAGE_REQUIRED,
+} from '@/constants/forms';
 
 type PersonListFormValues = {
   personList: PersonType[];
@@ -20,7 +25,12 @@ const PersonListForm = () => {
 
   const { personList } = normalizedEventData;
 
-  const { register, handleSubmit, control } = useForm<PersonListFormValues>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<PersonListFormValues>({
     defaultValues: {
       personList,
     },
@@ -55,13 +65,37 @@ const PersonListForm = () => {
         <div className="flex flex-col gap-2.5">
           {fields.map((field, index) => (
             <div key={field.id} className="flex gap-2 w-full">
-              <Input
-                {...register(`personList.${index}.name`)}
-                placeholder="Masukin nama temen kamu..."
-                defaultValue={field.name}
-                className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
-                autoFocus
-              />
+              <div className="w-full">
+                <Input
+                  {...register(`personList.${index}.name`, {
+                    required: true,
+                    validate: {
+                      checkUnique: (value, values) => {
+                        const currentPersonList = values.personList.map(
+                          (p) => p.name
+                        );
+
+                        return (
+                          currentPersonList?.filter((p) => p === value)
+                            ?.length < 2
+                        );
+                      },
+                    },
+                  })}
+                  placeholder="Masukin nama temen kamu..."
+                  defaultValue={field.name}
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                  autoFocus
+                />
+
+                {errors?.personList?.[index]?.name?.type === 'required' && (
+                  <ErrorMessageForm text={ERROR_MESSAGE_REQUIRED} />
+                )}
+
+                {errors?.personList?.[index]?.name?.type === 'checkUnique' && (
+                  <ErrorMessageForm text={ERROR_MESSAGE_NAME_DUPLICATE} />
+                )}
+              </div>
 
               {fields?.length > 1 && (
                 <Button
