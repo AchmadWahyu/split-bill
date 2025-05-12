@@ -4,7 +4,13 @@ import { EventType } from '../EventForm/types';
 import { eventDefaultValues } from '../EventForm/defaultValues';
 import { DebtCard } from './DebtCard';
 import { Button } from '@/components/ui/button';
-import { Pencil } from 'lucide-react';
+import { Info, Pencil } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
@@ -27,7 +33,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
 
   return (
     <main className="p-8 max-w-lg mx-auto">
-      <div className="text-left mb-12 flex gap-2 items-start justify-between">
+      <div className="text-left mb-8 flex gap-2 items-start justify-between">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">
           {title}
         </h1>
@@ -41,7 +47,25 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
         </Button>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="p-2 rounded-lg flex gap-2 text-slate-800 text-sm items-center">
+        <p>Datanya disimpan lokal di perangkat kamu</p>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <span>
+                Kalau kamu bagikan link-nya, orang lain nggak bisa melihat
+                datanya.
+              </span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="flex flex-col gap-4 mt-4">
         {finalResults.map((person) => {
           const filteredDebt = person.debts.filter(
             (d) => d?.totalDebtAfterDiscountAndTax
