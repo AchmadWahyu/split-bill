@@ -6,11 +6,15 @@ import { DebtCard } from './DebtCard';
 import { Button } from '@/components/ui/button';
 import { Info, Pencil } from 'lucide-react';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
@@ -20,11 +24,6 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
 
   const { title, personList, expense } = currentEvent || eventDefaultValues;
 
-  const expenseItems = expense?.items;
-
-  if (expenseItems?.length === 0 || personList?.length === 0) {
-    return <h2>Belum ada data</h2>;
-  }
   const personListSToString = personList.map((person) => person.name);
 
   const arrOfDebts = createArrOfDebts(expense, personListSToString);
@@ -50,7 +49,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
       <div className="p-2 rounded-lg flex gap-2 text-slate-800 text-sm items-center">
         <p>Datanya disimpan lokal di perangkat kamu</p>
 
-        <TooltipProvider>
+        {/* <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Info className="size-4" />
@@ -62,7 +61,44 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
               </span>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
+        </TooltipProvider> */}
+
+        <Drawer>
+          <DrawerTrigger>
+            <Info className="size-4" />
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>
+                Datanya disimpan lokal di perangkat kamu
+              </DrawerTitle>
+              <DrawerDescription>
+                <p className="text-slate-700">
+                  Aplikasi ini menggunakan sistem local-first, artinya semua
+                  data tagihan hanya tersimpan di browser kamu — bukan di server
+                </p>
+                <div className="border-1 p-4 rounded-md mt-4">
+                  <p className="font-semibold text-lg text-slate-900">
+                    Apa artinya buat kamu?
+                  </p>
+
+                  <ul className="list-disc ml-4 mt-2 text-slate-700">
+                    <li>
+                      Kalau kamu membagikan link tagihan ini, orang lain tidak
+                      bisa melihat isinya
+                    </li>
+                    <li>Data hanya bisa diakses dari perangkat yang sama</li>
+                  </ul>
+                </div>
+              </DrawerDescription>
+            </DrawerHeader>
+            <DrawerFooter>
+              <DrawerClose>
+                <Button className="w-full h-12">Mengerti</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       </div>
 
       <div className="flex flex-col gap-4 mt-4">
