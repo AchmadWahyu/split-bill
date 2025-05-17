@@ -12,6 +12,8 @@ import {
   ERROR_MESSAGE_REQUIRED,
 } from '@/constants/forms';
 import NotFoundPage from '../NotFoundPage';
+import { EventType } from '../EventForm/types';
+import { resetExpense } from '../ExpenseListForm/utils';
 
 type PersonListFormValues = {
   personList: PersonType[];
@@ -42,6 +44,8 @@ const PersonListForm = () => {
     name: 'personList',
   });
 
+  const updatedExpenseData = resetExpense(normalizedEventData.expense);
+
   if (!title) return <NotFoundPage />;
 
   return (
@@ -55,8 +59,9 @@ const PersonListForm = () => {
 
       <form
         onSubmit={handleSubmit((data) => {
-          const updatedEvent = {
+          const updatedEvent: EventType = {
             ...normalizedEventData,
+            expense: updatedExpenseData,
             personList: data.personList,
           };
 
@@ -126,7 +131,7 @@ const PersonListForm = () => {
           primaryButtonText="Lanjut tambah pengeluaran"
           secondaryButtonText="Balik edit nama acara"
           onClickSecondaryButton={handleSubmit((data) => {
-            const updatedEvent = {
+            const updatedEvent: EventType = {
               ...normalizedEventData,
               personList: data.personList,
             };
