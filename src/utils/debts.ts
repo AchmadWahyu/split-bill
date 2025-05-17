@@ -1,13 +1,15 @@
 import { ExpenseType } from '../routes/ExpenseListForm/types';
 
+type Transaction = {
+  title: string;
+  debtAfterDiscountAndTax: number;
+};
+
 export type Debt = {
   payer: string;
   totalDebtAfterDiscountAndTax: number;
-  surplus: number;
-  transactions: {
-    title: string;
-    debtAfterDiscountAndTax: number;
-  }[];
+  surplus: Transaction[];
+  transactions: Transaction[];
 };
 
 export type PersonWithDebt = {
@@ -85,7 +87,7 @@ function createArrOfDebts(
           arrDebts.push({
             payer: transaction.payer.name,
             totalDebtAfterDiscountAndTax: debtAfterDiscountAndTax,
-            surplus: 0,
+            surplus: [],
             transactions: [
               {
                 title: transaction.title,
@@ -142,7 +144,7 @@ function normalizeArrOfDebts(
               totalDebtAfterDiscountAndTax:
                 currentPersonDebt.totalDebtAfterDiscountAndTax -
                 currentPayerDebt,
-              surplus: currentPayerDebt,
+              surplus: currentPayerDebtData?.transactions || [],
             };
           }
         }
