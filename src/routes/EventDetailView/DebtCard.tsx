@@ -15,7 +15,7 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
       <div className="p-4">
         <p className="text-l font-semibold text-slate-500">Bayar ke:</p>
 
-        {debts.map((debt) => {
+        {debts.map((debt, debtIndex) => {
           const hasSurplus = debt.surplus.length > 0;
           const subTotalDebt = debt.transactions.reduce(
             (prev, curr) => prev + curr.debtAfterDiscountAndTax,
@@ -25,10 +25,14 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
             (prev, curr) => prev + curr.debtAfterDiscountAndTax,
             0
           );
+          const lastDebt = debtIndex === debts.length - 1;
 
           return (
             <div
-              className={clsx('mt-2 pb-4', hasMoreThanOneDebt && 'border-b-1')}
+              className={clsx(
+                'mt-2 pb-4',
+                hasMoreThanOneDebt && !lastDebt && 'border-b-1'
+              )}
               key={debt.payer}
             >
               <Collapse
