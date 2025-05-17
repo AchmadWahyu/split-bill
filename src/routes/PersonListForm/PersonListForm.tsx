@@ -11,6 +11,7 @@ import {
   ERROR_MESSAGE_NAME_DUPLICATE,
   ERROR_MESSAGE_REQUIRED,
 } from '@/constants/forms';
+import NotFoundPage from '../NotFoundPage';
 
 type PersonListFormValues = {
   personList: PersonType[];
@@ -23,7 +24,7 @@ const PersonListForm = () => {
 
   const normalizedEventData = normalizeEventData(event);
 
-  const { personList } = normalizedEventData;
+  const { personList, title } = normalizedEventData;
 
   const {
     register,
@@ -40,6 +41,8 @@ const PersonListForm = () => {
     control,
     name: 'personList',
   });
+
+  if (!title) return <NotFoundPage />;
 
   return (
     <main className="p-8 max-w-lg mx-auto">
