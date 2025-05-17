@@ -1,9 +1,12 @@
 import { Collapse } from '@/components/Collapse';
 import { formatCurrencyIDR } from '@/utils/currency';
 import { PersonWithDebt } from '@/utils/debts';
+import clsx from 'clsx';
 import { memo } from 'react';
 
 const DebtCard = ({ name, debts }: PersonWithDebt) => {
+  const hasMoreThanOneDebt = debts.length > 1;
+
   return (
     <div className="bg-card rounded-sm shadow-2xs">
       <div className="border-b p-4">
@@ -24,7 +27,10 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
           );
 
           return (
-            <div className="mt-2 pb-4 border-b-1" key={debt.payer}>
+            <div
+              className={clsx('mt-2 pb-4', hasMoreThanOneDebt && 'border-b-1')}
+              key={debt.payer}
+            >
               <Collapse
                 headerContent={
                   <div className="flex items-center justify-between">
@@ -45,7 +51,9 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
                 collapsedContent={
                   <div className="flex flex-col gap-2 ml-8 pl-4 border-l-2 mt-4">
                     <div>
-                      <p className="text-md">🔻 {name} ditraktir {debt.payer}:</p>
+                      <p className="text-md">
+                        🔻 {name} ditraktir {debt.payer}:
+                      </p>
 
                       {debt.transactions.map((transaction) => (
                         <div
@@ -74,13 +82,13 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
                       </div>
                     </div>
 
-                    <div className="mt-8">
-                      <p className="text-md">
-                        🟢 {name} mentraktir {debt.payer}:
-                      </p>
+                    {hasSurplus && (
+                      <div className="mt-8">
+                        <p className="text-md">
+                          🟢 {name} mentraktir {debt.payer}:
+                        </p>
 
-                      {hasSurplus &&
-                        debt.surplus.map((s) => (
+                        {debt.surplus.map((s) => (
                           <div
                             className="flex items-center justify-between"
                             key={s.title}
@@ -95,14 +103,15 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
                           </div>
                         ))}
 
-                      <div className="flex items-center justify-between pt-2 mt-2 border-t">
-                        <p className="text-md text-slate-500">Subtotal</p>
+                        <div className="flex items-center justify-between pt-2 mt-2 border-t">
+                          <p className="text-md text-slate-500">Subtotal</p>
 
-                        <p className="text-md text-slate-500 self-start">
-                          {formatCurrencyIDR(subTotalSurplus)}
-                        </p>
+                          <p className="text-md text-slate-500 self-start">
+                            {formatCurrencyIDR(subTotalSurplus)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 }
               />
