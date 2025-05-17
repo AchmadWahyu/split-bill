@@ -52,20 +52,6 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
       <div className="p-2 rounded-lg flex gap-2 text-slate-800 text-sm items-center">
         <p>Datanya disimpan lokal di perangkat kamu</p>
 
-        {/* <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="size-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <span>
-                Kalau kamu bagikan link-nya, orang lain nggak bisa melihat
-                datanya.
-              </span>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider> */}
-
         <Drawer>
           <DrawerTrigger>
             <Info className="size-4" />
