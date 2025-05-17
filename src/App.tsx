@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router';
 import Home from './routes/Home';
 import EventForm from './routes/EventForm/EventForm';
 import PersonListForm from './routes/PersonListForm/PersonListForm';
@@ -47,40 +47,37 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              eventList={eventList}
-              handleDeleteEventById={handleDeleteEventById}
-            />
-          }
-        />
-        <Route path="acara">
-          <Route
-            path=":eventId"
-            element={<EventDetailView eventList={eventList} />}
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Home
+            eventList={eventList}
+            handleDeleteEventById={handleDeleteEventById}
           />
+        }
+      />
+      <Route path="acara">
+        <Route
+          path=":eventId"
+          element={<EventDetailView eventList={eventList} />}
+        />
+        <Route
+          path=":eventId/edit"
+          element={<EventFormLayout eventList={eventList} />}
+        >
+          <Route path="general" element={<EventForm />} />
+          <Route path="anggota" element={<PersonListForm />} />
           <Route
-            path=":eventId/edit"
-            element={<EventFormLayout eventList={eventList} />}
-          >
-            <Route path="general" element={<EventForm />} />
-            <Route path="anggota" element={<PersonListForm />} />
-            <Route
-              path="transaksi"
-              element={
-                <ExpenseListForm
-                  handleUpdateEventById={handleUpdateEventById}
-                />
-              }
-            />
-          </Route>
+            path="transaksi"
+            element={
+              <ExpenseListForm handleUpdateEventById={handleUpdateEventById} />
+            }
+          />
         </Route>
-      </Routes>
-    </BrowserRouter>
+      </Route>
+      {/* <Route path='*' element={ <h1>Test 404</h1>}/> */}
+    </Routes>
   );
 }
 

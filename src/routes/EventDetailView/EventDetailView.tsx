@@ -15,6 +15,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import NotFoundPage from '../NotFoundPage';
 
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
@@ -23,6 +24,8 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const currentEvent = eventList?.find((event) => event.id === eventId);
 
   const { title, personList, expense } = currentEvent || eventDefaultValues;
+
+  if (!title) return <NotFoundPage />;
 
   const personListSToString = personList.map((person) => person.name);
 

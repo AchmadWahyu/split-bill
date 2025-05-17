@@ -25,6 +25,7 @@ import {
   ERROR_MESSAGE_MIN_TAX,
   ERROR_MESSAGE_REQUIRED,
 } from '@/constants/forms';
+import NotFoundPage from '../NotFoundPage';
 
 type ExpenseListFormValues = {
   expense: ExpenseType;
@@ -41,7 +42,7 @@ const ExpenseListForm = ({
 
   const normalizedEventData = normalizeEventData(event);
 
-  const { personList, expense } = normalizedEventData;
+  const { personList, expense, title } = normalizedEventData;
 
   const {
     register,
@@ -62,6 +63,8 @@ const ExpenseListForm = ({
   });
 
   const expenseError = errors?.expense;
+
+  if (!title) return <NotFoundPage />;
 
   return (
     <main className="relative min-h-screen bg-slate-50 items-center justify-center p-8">
