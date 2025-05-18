@@ -8,7 +8,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react(), tailwindcss(), sentryVitePlugin({
     org: "achwahyu",
-    project: "javascript-react"
+    project: "split-bill"
   })],
 
   resolve: {
