@@ -37,15 +37,6 @@ const Home = ({
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">
           Split Bill
         </h1>
-        <button
-          type="button"
-          onClick={() => {
-            throw new Error('Sentry Test Error');
-          }}
-        >
-          Break the world
-        </button>
-        ;
       </div>
       {!eventList.filter((e) => e.id)?.length && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
