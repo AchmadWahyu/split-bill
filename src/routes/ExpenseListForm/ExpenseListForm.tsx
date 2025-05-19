@@ -67,9 +67,9 @@ const ExpenseListForm = ({
   if (!title) return <NotFoundPage />;
 
   return (
-    <main className="relative min-h-screen bg-slate-50 items-center justify-center p-8">
-      <div className="space-y-2 text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+    <main className="p-8 max-w-lg mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-2">
           Catat Pengeluaran
         </h1>
       </div>
