@@ -55,7 +55,7 @@ function createArrOfDebts(
         const priceAfterDiscount =
           transaction.price - discountToTransactionRatio;
 
-        const pricePerPersonAfterDiscount = priceAfterDiscount / totalReceivers;
+        const pricePerPersonAfterDiscount = Math.round(priceAfterDiscount / totalReceivers);
 
         const debtAfterDiscountAndTax =
           pricePerPersonAfterDiscount +
