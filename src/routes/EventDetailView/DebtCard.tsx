@@ -25,7 +25,48 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
             (prev, curr) => prev + curr.debtAfterDiscountAndTax,
             0
           );
+
           const lastDebt = debtIndex === debts.length - 1;
+
+          const totalDebtDiscountAmount = debt.transactions.reduce(
+            (prev, curr) => prev + curr.discount,
+            0
+          );
+
+          const totalDebtTaxAmount = debt.transactions.reduce(
+            (prev, curr) => prev + curr.tax,
+            0
+          );
+
+          const totalDebtServiceChargeAmount = debt.transactions.reduce(
+            (prev, curr) => prev + curr.serviceCharge,
+            0
+          );
+
+          const hasDebtDiscountOrAdditionalCharge =
+            totalDebtDiscountAmount > 0 ||
+            totalDebtTaxAmount > 0 ||
+            totalDebtServiceChargeAmount > 0;
+
+          const totalSurplusDiscountAmount = debt.surplus.reduce(
+            (prev, curr) => prev + curr.discount,
+            0
+          );
+
+          const totalSurplusTaxAmount = debt.surplus.reduce(
+            (prev, curr) => prev + curr.tax,
+            0
+          );
+
+          const totalSurplusServiceChargeAmount = debt.surplus.reduce(
+            (prev, curr) => prev + curr.serviceCharge,
+            0
+          );
+
+          const hasSurplusDiscountOrAdditionalCharge =
+            totalSurplusDiscountAmount > 0 ||
+            totalSurplusTaxAmount > 0 ||
+            totalSurplusServiceChargeAmount > 0;
 
           return (
             <div
@@ -55,7 +96,7 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
                 collapsedContent={
                   <div className="flex flex-col gap-2 ml-8 pl-4 border-l-2 mt-4">
                     <div>
-                      <p className="text-md">
+                      <p className="text-md mb-2">
                         🔻 {name} ditraktir {debt.payer}:
                       </p>
 
@@ -69,18 +110,56 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
                           </p>
 
                           <p className="text-base font-semibold text-red-600 self-start">
-                            -{' '}
-                            {formatCurrencyIDR(
-                              transaction.debtAfterDiscountAndTax
-                            )}
+                            - {formatCurrencyIDR(transaction.basePrice)}
                           </p>
                         </div>
                       ))}
 
-                      <div className="flex items-center justify-between pt-2 mt-2 border-t">
-                        <p className="text-md text-slate-500">Subtotal</p>
+                      <div
+                        className={clsx(
+                          hasDebtDiscountOrAdditionalCharge &&
+                            'mt-2 pt-2 border-t'
+                        )}
+                      >
+                        {totalDebtTaxAmount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-base text-slate-500">Pajak</p>
 
-                        <p className="text-md text-slate-500 self-start">
+                            <p className="text-base text-slate-500 self-start">
+                              {formatCurrencyIDR(totalDebtTaxAmount)}
+                            </p>
+                          </div>
+                        )}
+
+                        {totalDebtServiceChargeAmount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-base text-slate-500">
+                              Biaya Layanan
+                            </p>
+
+                            <p className="text-base text-slate-500 self-start">
+                              {formatCurrencyIDR(totalDebtServiceChargeAmount)}
+                            </p>
+                          </div>
+                        )}
+
+                        {totalDebtDiscountAmount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-base text-emerald-600">Diskon</p>
+
+                            <p className="text-base text-emerald-600 self-start">
+                              + {formatCurrencyIDR(totalDebtDiscountAmount)}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 mt-2 border-t">
+                        <p className="text-md text-slate-700 font-semibold">
+                          Subtotal
+                        </p>
+
+                        <p className="text-md text-slate-700 self-start font-semibold">
                           {formatCurrencyIDR(subTotalDebt)}
                         </p>
                       </div>
@@ -88,7 +167,7 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
 
                     {hasSurplus && (
                       <div className="mt-8">
-                        <p className="text-md">
+                        <p className="text-md mb-2">
                           🟢 {name} mentraktir {debt.payer}:
                         </p>
 
@@ -102,10 +181,54 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
                             </p>
 
                             <p className="text-base font-semibold text-emerald-600 self-start">
-                              + {formatCurrencyIDR(s.debtAfterDiscountAndTax)}
+                              + {formatCurrencyIDR(s.basePrice)}
                             </p>
                           </div>
                         ))}
+
+                        <div
+                          className={clsx(
+                            hasSurplusDiscountOrAdditionalCharge &&
+                              'mt-2 pt-2 border-t'
+                          )}
+                        >
+                          {totalSurplusTaxAmount > 0 && (
+                            <div className="flex items-center justify-between">
+                              <p className="text-base text-slate-500">Pajak</p>
+
+                              <p className="text-base text-slate-500 self-start">
+                                {formatCurrencyIDR(totalSurplusTaxAmount)}
+                              </p>
+                            </div>
+                          )}
+
+                          {totalSurplusServiceChargeAmount > 0 && (
+                            <div className="flex items-center justify-between">
+                              <p className="text-base text-slate-500">
+                                Biaya Layanan
+                              </p>
+
+                              <p className="text-base text-slate-500 self-start">
+                                {formatCurrencyIDR(
+                                  totalSurplusServiceChargeAmount
+                                )}
+                              </p>
+                            </div>
+                          )}
+
+                          {totalSurplusDiscountAmount > 0 && (
+                            <div className="flex items-center justify-between">
+                              <p className="text-base text-emerald-600">
+                                Diskon
+                              </p>
+
+                              <p className="text-base text-emerald-600 self-start">
+                                +{' '}
+                                {formatCurrencyIDR(totalSurplusDiscountAmount)}
+                              </p>
+                            </div>
+                          )}
+                        </div>
 
                         <div className="flex items-center justify-between pt-2 mt-2 border-t">
                           <p className="text-md text-slate-500">Subtotal</p>

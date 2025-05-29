@@ -10,6 +10,16 @@ export const itemDefaultValues: ItemType = {
 
 export const expenseDefaultValues: ExpenseType = {
   items: [itemDefaultValues],
-  tax: 0,
-  discount: 0,
+  tax: {
+    value: 0,
+    type: 'PERCENTAGE',
+  },
+  discount: {
+    value: 0,
+    type: 'AMOUNT',
+  },
+  serviceCharge: {
+    value: 0,
+    type: 'AMOUNT',
+  },
 };

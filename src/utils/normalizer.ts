@@ -16,8 +16,18 @@ export const normalizeEventData = (event: EventType | undefined): EventType => {
         !event?.expense?.items || event?.expense?.items?.length === 0
           ? [itemDefaultValues]
           : event?.expense?.items,
-      tax: event?.expense?.tax || 0,
-      discount: event?.expense?.discount || 0,
+      tax: {
+        type: event?.expense?.tax?.type || 'PERCENTAGE',
+        value: event?.expense?.tax?.value || 0,
+      },
+      discount: {
+        type: event?.expense?.discount?.type || 'PERCENTAGE',
+        value: event?.expense?.discount?.value || 0,
+      },
+      serviceCharge: {
+        type: event?.expense?.serviceCharge?.type || 'PERCENTAGE',
+        value: event?.expense?.serviceCharge?.value || 0,
+      },
     },
   };
 };
