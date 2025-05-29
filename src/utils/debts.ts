@@ -1,8 +1,15 @@
-import { ExpenseType } from '../routes/ExpenseListForm/types';
+import {
+  DynacicPercentageValue,
+  ExpenseType,
+} from '../routes/ExpenseListForm/types';
 
 type Transaction = {
   title: string;
   debtAfterDiscountAndTax: number;
+  basePrice: number;
+  discount: number;
+  tax: number;
+  serviceCharge: number;
 };
 
 export type Debt = {
@@ -17,11 +24,22 @@ export type PersonWithDebt = {
   debts: Debt[];
 };
 
+function getAmount(
+  type: DynacicPercentageValue,
+  percentageValue: number,
+  total: number
+): number {
+  if (type === 'AMOUNT') return Number(percentageValue * total);
+  if (!percentageValue) return 0;
+
+  return (percentageValue / 100) * total;
+}
+
 function createArrOfDebts(
   expenseData: ExpenseType,
   arrPerson: string[]
 ): PersonWithDebt[] {
-  const { items, discount, tax } = expenseData;
+  const { items, discount, tax, serviceCharge } = expenseData;
 
   return arrPerson.map((person) => {
     let arrDebts: Debt[] = [];
@@ -47,19 +65,34 @@ function createArrOfDebts(
 
         // count the ratio of current transaction price to total expense (before discount & tax)
         const ratioTransactionPriceToTotalExpense =
-          transaction.price / totalExpense;
+          transaction.price / totalReceivers / totalExpense;
 
-        const discountToTransactionRatio =
-          ratioTransactionPriceToTotalExpense * discount;
+        const pricePerPerson = transaction.price / totalReceivers;
 
-        const priceAfterDiscount =
-          transaction.price - discountToTransactionRatio;
+        // normalize discount
+        const discountAmount = getAmount(
+          discount.type,
+          discount.value,
+          ratioTransactionPriceToTotalExpense
+        );
 
-        const pricePerPersonAfterDiscount = Math.round(priceAfterDiscount / totalReceivers);
+        // normalize tax
+        const taxAmount = getAmount(
+          tax.type,
+          tax.value,
+          ratioTransactionPriceToTotalExpense
+        );
 
-        const debtAfterDiscountAndTax =
-          pricePerPersonAfterDiscount +
-          (pricePerPersonAfterDiscount * tax) / 100;
+        // normalize service charge
+        const serviceChargeAmount = getAmount(
+          serviceCharge.type,
+          serviceCharge.value,
+          ratioTransactionPriceToTotalExpense
+        );
+
+        // count the total price after discount, tax, and service charge
+        const debtAfterDiscountTaxServiceCharge =
+          pricePerPerson - discountAmount + taxAmount + serviceChargeAmount;
 
         // if there is another transaction with the same payer, update the total price and add the transaction to the list
         if (anotherTransactionWithTheSamePayer) {
@@ -71,12 +104,16 @@ function createArrOfDebts(
             ...anotherTransactionWithTheSamePayer,
             totalDebtAfterDiscountAndTax:
               anotherTransactionWithTheSamePayer.totalDebtAfterDiscountAndTax +
-              debtAfterDiscountAndTax,
+              debtAfterDiscountTaxServiceCharge,
             transactions: [
               ...anotherTransactionWithTheSamePayer.transactions,
               {
                 title: transaction.title,
-                debtAfterDiscountAndTax,
+                debtAfterDiscountAndTax: debtAfterDiscountTaxServiceCharge,
+                basePrice: pricePerPerson,
+                discount: discountAmount,
+                tax: taxAmount,
+                serviceCharge: serviceChargeAmount,
               },
             ],
           };
@@ -86,12 +123,16 @@ function createArrOfDebts(
           // if not, create a new debt
           arrDebts.push({
             payer: transaction.payer.name,
-            totalDebtAfterDiscountAndTax: debtAfterDiscountAndTax,
+            totalDebtAfterDiscountAndTax: debtAfterDiscountTaxServiceCharge,
             surplus: [],
             transactions: [
               {
                 title: transaction.title,
-                debtAfterDiscountAndTax,
+                debtAfterDiscountAndTax: debtAfterDiscountTaxServiceCharge,
+                basePrice: pricePerPerson,
+                discount: discountAmount,
+                tax: taxAmount,
+                serviceCharge: serviceChargeAmount,
               },
             ],
           });

@@ -7,8 +7,20 @@ export type ItemType = {
   receiver: string[];
 };
 
+export type DynacicPercentageValue = 'PERCENTAGE' | 'AMOUNT';
+
 export type ExpenseType = {
   items: ItemType[];
-  tax: number;
-  discount: number;
+  tax: {
+    value: number;
+    type: DynacicPercentageValue;
+  };
+  discount: {
+    value: number;
+    type: DynacicPercentageValue;
+  };
+  serviceCharge: {
+    value: number;
+    type: DynacicPercentageValue;
+  };
 };
