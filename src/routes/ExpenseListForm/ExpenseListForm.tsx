@@ -20,14 +20,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { BottomNav } from '@/components/BottomNav';
 import { ErrorMessageForm } from '@/components/ErrorMessageForm';
 import {
+  ERROR_MESSAGE_MAX_PERCENTAGE_TAX,
   ERROR_MESSAGE_MIN_RP_0,
   ERROR_MESSAGE_MIN_RP_1,
   ERROR_MESSAGE_MIN_TAX,
   ERROR_MESSAGE_REQUIRED,
 } from '@/constants/forms';
 import NotFoundPage from '../NotFoundPage';
+import { ToggleWrapper } from '@/components/ui/toggle-wrapper';
 
-type ExpenseListFormValues = {
+export type ExpenseListFormValues = {
   expense: ExpenseType;
 };
 
@@ -51,6 +53,7 @@ const ExpenseListForm = ({
     getValues,
     watch,
     formState: { errors },
+    clearErrors,
   } = useForm<ExpenseListFormValues>({
     defaultValues: {
       expense,
@@ -65,6 +68,12 @@ const ExpenseListForm = ({
   const expenseError = errors?.expense;
 
   if (!title) return <NotFoundPage />;
+
+  const isTaxPercentage = getValues('expense.tax.type') === 'PERCENTAGE';
+  const isDiscountPercentage =
+    getValues('expense.discount.type') === 'PERCENTAGE';
+  const isServiceChargePercentage =
+    getValues('expense.serviceCharge.type') === 'PERCENTAGE';
 
   return (
     <main className="p-8 max-w-lg mx-auto">
@@ -87,7 +96,7 @@ const ExpenseListForm = ({
         className="w-full max-w-md"
       >
         {fields.map((field, expenseItemIndex) => {
-          const errorItem = errors?.expense?.items?.[expenseItemIndex];
+          const errorItem = expenseError?.items?.[expenseItemIndex];
 
           return (
             <Card
@@ -270,69 +279,148 @@ const ExpenseListForm = ({
 
         <Card className="bg-white border-slate-200 shadow-sm mt-4">
           <CardContent>
-            <div className="flex items-center">
-              <label className="text-slate-900 font-semibold shrink-0">
-                Pake pajak ngga?
-              </label>
-              <div>
-                <div className="flex items-center">
-                  <Input
-                    className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 ml-4 mr-2"
-                    type="number"
-                    {...register('expense.tax', {
-                      min: {
-                        value: 0,
-                        message: ERROR_MESSAGE_MIN_TAX,
-                      },
-                    })}
-                    onFocus={(e) => {
-                      e.target.select();
-                    }}
-                    defaultValue={expense.tax}
-                  />
-                  <span>%</span>
-                </div>
-                {expenseError?.tax?.message && (
-                  <ErrorMessageForm
-                    className="ml-4"
-                    text={expenseError?.tax?.message || ''}
-                  />
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-slate-200 shadow-sm mt-4">
-          <CardContent className="flex items-center gap-4">
-            <label className="text-slate-900 font-semibold shrink-0">
-              Ada diskonnya?
-            </label>
-            <div className="flex items-center gap-4">
-              <span>Rp</span>
-              <div>
+            <ToggleWrapper
+              control={control}
+              clearErrors={clearErrors}
+              controllerName="expense.tax.type"
+              fieldLabel={
+                <label className="text-slate-900 font-semibold shrink-0">
+                  Pake pajak ngga?
+                </label>
+              }
+              percentageLabel={
+                <span className="text-slate-900 font-semibold">%</span>
+              }
+              amountLabel={
+                <span className="text-slate-900 font-semibold">Rp</span>
+              }
+            >
+              <>
                 <Input
                   className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
                   type="number"
-                  {...register('expense.discount', {
+                  {...register('expense.tax.value', {
                     min: {
                       value: 0,
-                      message: ERROR_MESSAGE_MIN_RP_0,
+                      message: ERROR_MESSAGE_MIN_TAX,
+                    },
+                    validate: (value) => {
+                      if (isTaxPercentage && value > 100) {
+                        return ERROR_MESSAGE_MAX_PERCENTAGE_TAX;
+                      }
+                      return true;
                     },
                   })}
                   onFocus={(e) => {
                     e.target.select();
                   }}
-                  defaultValue={expense.discount}
+                  defaultValue={expense.tax.value}
                 />
-                {expenseError?.discount?.message && (
+                {expenseError?.tax?.value?.message && (
                   <ErrorMessageForm
-                    className="ml-4"
-                    text={expenseError?.discount?.message || ''}
+                    text={expenseError?.tax?.value?.message || ''}
                   />
                 )}
-              </div>
-            </div>
+              </>
+            </ToggleWrapper>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-slate-200 shadow-sm mt-4">
+          <CardContent>
+            <ToggleWrapper
+              control={control}
+              clearErrors={clearErrors}
+              controllerName="expense.serviceCharge.type"
+              fieldLabel={
+                <label className="text-slate-900 font-semibold shrink-0">
+                  Ada Service Chargenya?
+                </label>
+              }
+              percentageLabel={
+                <span className="text-slate-900 font-semibold">%</span>
+              }
+              amountLabel={
+                <span className="text-slate-900 font-semibold">Rp</span>
+              }
+            >
+              <>
+                <Input
+                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                  type="number"
+                  {...register('expense.serviceCharge.value', {
+                    min: {
+                      value: 0,
+                      message: ERROR_MESSAGE_MIN_TAX,
+                    },
+                    validate: (value) => {
+                      if (isServiceChargePercentage && value > 100) {
+                        return ERROR_MESSAGE_MAX_PERCENTAGE_TAX;
+                      }
+                      return true;
+                    },
+                  })}
+                  onFocus={(e) => {
+                    e.target.select();
+                  }}
+                  defaultValue={expense.serviceCharge.value}
+                />
+                {expenseError?.serviceCharge?.value?.message && (
+                  <ErrorMessageForm
+                    text={expenseError?.serviceCharge?.value?.message || ''}
+                  />
+                )}
+              </>
+            </ToggleWrapper>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-slate-200 shadow-sm mt-4">
+          <CardContent>
+            <ToggleWrapper
+              control={control}
+              clearErrors={clearErrors}
+              controllerName="expense.discount.type"
+              fieldLabel={
+                <label className="text-slate-900 font-semibold shrink-0">
+                  Ada diskonnya?
+                </label>
+              }
+              percentageLabel={
+                <span className="text-slate-900 font-semibold">%</span>
+              }
+              amountLabel={
+                <span className="text-slate-900 font-semibold">Rp</span>
+              }
+            >
+              <>
+                <Input
+                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                  type="number"
+                  {...register('expense.discount.value', {
+                    min: {
+                      value: 0,
+                      message: ERROR_MESSAGE_MIN_RP_0,
+                    },
+                    validate: (value) => {
+                      if (isDiscountPercentage && value > 100) {
+                        return ERROR_MESSAGE_MAX_PERCENTAGE_TAX;
+                      }
+                      return true;
+                    },
+                  })}
+                  onFocus={(e) => {
+                    e.target.select();
+                  }}
+                  defaultValue={expense.discount.value}
+                />
+                {expenseError?.discount?.value?.message && (
+                  <ErrorMessageForm
+                    text={expenseError?.discount?.value?.message || ''}
+                  />
+                )}
+              </>
+            </ToggleWrapper>
           </CardContent>
         </Card>
 
