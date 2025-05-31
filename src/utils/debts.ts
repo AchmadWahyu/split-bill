@@ -27,12 +27,13 @@ export type PersonWithDebt = {
 function getAmount(
   type: DynacicPercentageValue,
   percentageValue: number,
-  total: number
+  total: number,
+  pricePerPerson: number
 ): number {
   if (type === 'AMOUNT') return Number(percentageValue * total);
   if (!percentageValue) return 0;
 
-  return (percentageValue / 100) * total;
+  return (percentageValue / 100) * pricePerPerson;
 }
 
 function createArrOfDebts(
@@ -73,21 +74,24 @@ function createArrOfDebts(
         const discountAmount = getAmount(
           discount.type,
           discount.value,
-          ratioTransactionPriceToTotalExpense
+          ratioTransactionPriceToTotalExpense,
+          pricePerPerson
         );
 
         // normalize tax
         const taxAmount = getAmount(
           tax.type,
           tax.value,
-          ratioTransactionPriceToTotalExpense
+          ratioTransactionPriceToTotalExpense,
+          pricePerPerson
         );
 
         // normalize service charge
         const serviceChargeAmount = getAmount(
           serviceCharge.type,
           serviceCharge.value,
-          ratioTransactionPriceToTotalExpense
+          ratioTransactionPriceToTotalExpense,
+          pricePerPerson
         );
 
         // count the total price after discount, tax, and service charge
