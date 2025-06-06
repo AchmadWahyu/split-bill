@@ -38,6 +38,12 @@ const Home = ({
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">
           Split Bareng
         </h1>
+
+        {!hasNoTransacton && (
+          <p className="text-muted-foreground mt-4 mb-6 max-w-md">
+            Split bill simpel, cepet, bareng-bareng!
+          </p>
+        )}
       </div>
       {hasNoTransacton && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
