@@ -30,15 +30,16 @@ const Home = ({
   const [selectedEventId, setSelectedEventId] = useState<string>('');
 
   const eventList = _eventList.filter((event) => Boolean(event.id));
+  const hasNoTransacton = eventList.length === 0;
 
   return (
     <main className="p-8">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-          Split Bill
+          Split Bareng
         </h1>
       </div>
-      {!eventList.filter((e) => e.id)?.length && (
+      {hasNoTransacton && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="rounded-full bg-muted p-6 mb-4">
             <Users className="h-10 w-10 text-muted-foreground" />
