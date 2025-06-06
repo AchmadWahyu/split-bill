@@ -5,3 +5,8 @@ export const formatCurrencyIDR = (price: number) => {
     maximumFractionDigits: 0,
   }).format(price);
 };
+
+export const formatNumberWithThousandSeparator = (value: number): string => {
+  const formatter = new Intl.NumberFormat('id-ID');
+  return formatter.format(value);
+};

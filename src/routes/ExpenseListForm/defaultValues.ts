@@ -4,6 +4,7 @@ import { ExpenseType, ItemType } from './types';
 export const itemDefaultValues: ItemType = {
   title: '',
   price: 0,
+  formattedStringPrice: '',
   payer: personDefaultValues,
   receiver: [''],
 };

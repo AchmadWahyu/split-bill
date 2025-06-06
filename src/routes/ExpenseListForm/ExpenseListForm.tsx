@@ -1,5 +1,8 @@
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { formatCurrencyIDR } from '../../utils/currency';
+import {
+  formatCurrencyIDR,
+  formatNumberWithThousandSeparator,
+} from '../../utils/currency';
 import { ExpenseType } from './types';
 import { useNavigate, useOutletContext, useParams } from 'react-router';
 import { EditEventContextType } from '../EventFormLayout';
@@ -54,6 +57,7 @@ const ExpenseListForm = ({
     watch,
     formState: { errors },
     clearErrors,
+    setValue,
   } = useForm<ExpenseListFormValues>({
     defaultValues: {
       expense,
@@ -144,23 +148,42 @@ const ExpenseListForm = ({
                   Berapa Harganya?
                 </label>
                 <Input
-                  {...register(`expense.items.${expenseItemIndex}.price`, {
-                    min: {
-                      value: 1,
-                      message: ERROR_MESSAGE_MIN_RP_1,
-                    },
-                  })}
+                  {...register(
+                    `expense.items.${expenseItemIndex}.formattedStringPrice`,
+                    {
+                      min: {
+                        value: 1,
+                        message: ERROR_MESSAGE_MIN_RP_1,
+                      },
+                    }
+                  )}
                   placeholder="Contoh: 10000"
-                  type="number"
+                  inputMode="numeric"
                   defaultValue={field.price}
                   onFocus={(e) => {
                     e.target.select();
                   }}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/\D/g, '');
+
+                    const formattedValue = formatNumberWithThousandSeparator(
+                      Number(rawValue)
+                    );
+
+                    setValue(
+                      `expense.items.${expenseItemIndex}.formattedStringPrice`,
+                      formattedValue
+                    );
+                    setValue(
+                      `expense.items.${expenseItemIndex}.price`,
+                      Number(rawValue)
+                    );
+                  }}
                   className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-2"
                 />
 
-                {errorItem?.price && (
-                  <ErrorMessageForm text={errorItem?.price?.message || ''} />
+                {errorItem?.formattedStringPrice && (
+                  <ErrorMessageForm text={errorItem?.formattedStringPrice?.message || ''} />
                 )}
               </CardContent>
 
@@ -268,6 +291,7 @@ const ExpenseListForm = ({
             append({
               title: '',
               price: 0,
+              formattedStringPrice: '',
               payer: { name: '' },
               receiver: [''],
             })

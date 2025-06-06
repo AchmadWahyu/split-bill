@@ -3,6 +3,7 @@ import { PersonType } from '../PersonListForm/types';
 export type ItemType = {
   title: string;
   price: number;
+  formattedStringPrice: string;
   payer: PersonType;
   receiver: string[];
 };
