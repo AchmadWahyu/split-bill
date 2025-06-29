@@ -59,9 +59,11 @@ const Home = ({
 
       <div className="grid gap-4 md:grid-cols-2">
         {eventList.map((event) => {
-          const expensesPrice = event.expense.items.map((item) => item.price);
+          const expensesPrice = event.expense.items.map((item) =>
+            Number(item.price)
+          );
           const totalExpense = expensesPrice.reduce(
-            (prev, curr) => Number(prev) + Number(curr)
+            (prev, curr) => prev + curr
           );
 
           return (
