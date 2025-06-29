@@ -2,8 +2,7 @@ import { PersonType } from '../PersonListForm/types';
 
 export type ItemType = {
   title: string;
-  price: number;
-  formattedStringPrice: string;
+  price: string;
   payer: PersonType;
   receiver: string[];
 };
@@ -13,15 +12,15 @@ export type DynacicPercentageValue = 'PERCENTAGE' | 'AMOUNT';
 export type ExpenseType = {
   items: ItemType[];
   tax: {
-    value: number;
+    value: string;
     type: DynacicPercentageValue;
   };
   discount: {
-    value: number;
+    value: string;
     type: DynacicPercentageValue;
   };
   serviceCharge: {
-    value: number;
+    value: string;
     type: DynacicPercentageValue;
   };
 };

@@ -1,7 +1,8 @@
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import {
   formatCurrencyIDR,
-  formatNumberWithThousandSeparator,
+  formatThousandSeparator,
+  unformatThousandSeparator,
 } from '../../utils/currency';
 import { ExpenseType } from './types';
 import { useNavigate, useOutletContext, useParams } from 'react-router';
@@ -26,7 +27,6 @@ import {
   ERROR_MESSAGE_MAX_PERCENTAGE_TAX,
   ERROR_MESSAGE_MIN_RP_0,
   ERROR_MESSAGE_MIN_RP_1,
-  ERROR_MESSAGE_MIN_TAX,
   ERROR_MESSAGE_REQUIRED,
 } from '@/constants/forms';
 import NotFoundPage from '../NotFoundPage';
@@ -57,7 +57,6 @@ const ExpenseListForm = ({
     watch,
     formState: { errors },
     clearErrors,
-    setValue,
   } = useForm<ExpenseListFormValues>({
     defaultValues: {
       expense,
@@ -147,43 +146,44 @@ const ExpenseListForm = ({
                 <label className="text-slate-900 font-semibold">
                   Berapa Harganya?
                 </label>
-                <Input
-                  {...register(
-                    `expense.items.${expenseItemIndex}.formattedStringPrice`,
-                    {
-                      min: {
-                        value: 1,
-                        message: ERROR_MESSAGE_MIN_RP_1,
-                      },
-                    }
+
+                <Controller
+                  name={`expense.items.${expenseItemIndex}.price`}
+                  control={control}
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <Input
+                      {...rest}
+                      inputMode="numeric"
+                      placeholder="Contoh: 30.000"
+                      defaultValue={value}
+                      value={formatThousandSeparator(value ?? '')}
+                      onChange={(e) => {
+                        const digitsOnly = unformatThousandSeparator(
+                          e.target.value
+                        );
+
+                        onChange(digitsOnly);
+                      }}
+                      onFocus={(e) => {
+                        e.target.select();
+                      }}
+                      className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-2"
+                    />
                   )}
-                  placeholder="Contoh: 10000"
-                  inputMode="numeric"
-                  defaultValue={field.price}
-                  onFocus={(e) => {
-                    e.target.select();
+                  rules={{
+                    required: {
+                      value: true,
+                      message: ERROR_MESSAGE_REQUIRED,
+                    },
+                    min: {
+                      value: 1,
+                      message: ERROR_MESSAGE_MIN_RP_1,
+                    },
                   }}
-                  onChange={(e) => {
-                    const rawValue = e.target.value.replace(/\D/g, '');
-
-                    const formattedValue = formatNumberWithThousandSeparator(
-                      Number(rawValue)
-                    );
-
-                    setValue(
-                      `expense.items.${expenseItemIndex}.formattedStringPrice`,
-                      formattedValue
-                    );
-                    setValue(
-                      `expense.items.${expenseItemIndex}.price`,
-                      Number(rawValue)
-                    );
-                  }}
-                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-2"
                 />
 
-                {errorItem?.formattedStringPrice && (
-                  <ErrorMessageForm text={errorItem?.formattedStringPrice?.message || ''} />
+                {errorItem?.price && (
+                  <ErrorMessageForm text={errorItem?.price?.message || ''} />
                 )}
               </CardContent>
 
@@ -242,7 +242,7 @@ const ExpenseListForm = ({
                     personList.map((person, personIndex) => {
                       const currentExpenseTotalPrice =
                         getValues('expense.items')?.[expenseItemIndex]?.price ||
-                        0;
+                        '';
 
                       const currentReceivers =
                         watch('expense.items')?.[
@@ -252,7 +252,8 @@ const ExpenseListForm = ({
                       const isChecked = currentReceivers?.includes(person.name);
 
                       const averagePrice =
-                        currentExpenseTotalPrice / currentReceivers.length || 0;
+                        parseInt(currentExpenseTotalPrice) /
+                          currentReceivers.length || 0;
 
                       return (
                         <label key={personIndex} className="flex items-center">
@@ -290,8 +291,7 @@ const ExpenseListForm = ({
           onClick={() =>
             append({
               title: '',
-              price: 0,
-              formattedStringPrice: '',
+              price: '0',
               payer: { name: '' },
               receiver: [''],
             })
@@ -320,25 +320,45 @@ const ExpenseListForm = ({
               }
             >
               <>
-                <Input
-                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
-                  type="number"
-                  {...register('expense.tax.value', {
+                <Controller
+                  name="expense.tax.value"
+                  control={control}
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <Input
+                      {...rest}
+                      inputMode="numeric"
+                      placeholder="Contoh: 30.000"
+                      defaultValue={value}
+                      value={formatThousandSeparator(value ?? '')}
+                      onChange={(e) => {
+                        const digitsOnly = unformatThousandSeparator(
+                          e.target.value
+                        );
+
+                        onChange(digitsOnly);
+                      }}
+                      onFocus={(e) => {
+                        e.target.select();
+                      }}
+                      className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                    />
+                  )}
+                  rules={{
+                    required: {
+                      value: true,
+                      message: ERROR_MESSAGE_REQUIRED,
+                    },
                     min: {
                       value: 0,
-                      message: ERROR_MESSAGE_MIN_TAX,
+                      message: ERROR_MESSAGE_MIN_RP_0,
                     },
                     validate: (value) => {
-                      if (isTaxPercentage && value > 100) {
+                      if (isTaxPercentage && Number(value) > 100) {
                         return ERROR_MESSAGE_MAX_PERCENTAGE_TAX;
                       }
                       return true;
                     },
-                  })}
-                  onFocus={(e) => {
-                    e.target.select();
                   }}
-                  defaultValue={expense.tax.value}
                 />
                 {expenseError?.tax?.value?.message && (
                   <ErrorMessageForm
@@ -369,25 +389,45 @@ const ExpenseListForm = ({
               }
             >
               <>
-                <Input
-                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
-                  type="number"
-                  {...register('expense.serviceCharge.value', {
+                <Controller
+                  name="expense.serviceCharge.value"
+                  control={control}
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <Input
+                      {...rest}
+                      inputMode="numeric"
+                      placeholder="Contoh: 30.000"
+                      defaultValue={value}
+                      value={formatThousandSeparator(value ?? '')}
+                      onChange={(e) => {
+                        const digitsOnly = unformatThousandSeparator(
+                          e.target.value
+                        );
+
+                        onChange(digitsOnly);
+                      }}
+                      onFocus={(e) => {
+                        e.target.select();
+                      }}
+                      className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                    />
+                  )}
+                  rules={{
+                    required: {
+                      value: true,
+                      message: ERROR_MESSAGE_REQUIRED,
+                    },
                     min: {
                       value: 0,
-                      message: ERROR_MESSAGE_MIN_TAX,
+                      message: ERROR_MESSAGE_MIN_RP_0,
                     },
                     validate: (value) => {
-                      if (isServiceChargePercentage && value > 100) {
+                      if (isServiceChargePercentage && Number(value) > 100) {
                         return ERROR_MESSAGE_MAX_PERCENTAGE_TAX;
                       }
                       return true;
                     },
-                  })}
-                  onFocus={(e) => {
-                    e.target.select();
                   }}
-                  defaultValue={expense.serviceCharge.value}
                 />
                 {expenseError?.serviceCharge?.value?.message && (
                   <ErrorMessageForm
@@ -418,25 +458,45 @@ const ExpenseListForm = ({
               }
             >
               <>
-                <Input
-                  className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
-                  type="number"
-                  {...register('expense.discount.value', {
+                <Controller
+                  name="expense.discount.value"
+                  control={control}
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <Input
+                      {...rest}
+                      inputMode="numeric"
+                      placeholder="Contoh: 30.000"
+                      defaultValue={value}
+                      value={formatThousandSeparator(value ?? '')}
+                      onChange={(e) => {
+                        const digitsOnly = unformatThousandSeparator(
+                          e.target.value
+                        );
+
+                        onChange(digitsOnly);
+                      }}
+                      onFocus={(e) => {
+                        e.target.select();
+                      }}
+                      className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+                    />
+                  )}
+                  rules={{
+                    required: {
+                      value: true,
+                      message: ERROR_MESSAGE_REQUIRED,
+                    },
                     min: {
                       value: 0,
                       message: ERROR_MESSAGE_MIN_RP_0,
                     },
                     validate: (value) => {
-                      if (isDiscountPercentage && value > 100) {
+                      if (isDiscountPercentage && Number(value) > 100) {
                         return ERROR_MESSAGE_MAX_PERCENTAGE_TAX;
                       }
                       return true;
                     },
-                  })}
-                  onFocus={(e) => {
-                    e.target.select();
                   }}
-                  defaultValue={expense.discount.value}
                 />
                 {expenseError?.discount?.value?.message && (
                   <ErrorMessageForm

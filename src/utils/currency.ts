@@ -6,7 +6,12 @@ export const formatCurrencyIDR = (price: number) => {
   }).format(price);
 };
 
-export const formatNumberWithThousandSeparator = (value: number): string => {
-  const formatter = new Intl.NumberFormat('id-ID');
-  return formatter.format(value);
+export const formatThousandSeparator = (value: string): string => {
+  const parsedToStringValue = String(value);
+  
+  const num = Number(parsedToStringValue.replace(/\D/g, ''));
+  return isNaN(num) ? '' : new Intl.NumberFormat('id-ID').format(num);
 };
+
+export const unformatThousandSeparator = (formatted: string): string =>
+  formatted.replace(/\D/g, '');

@@ -26,14 +26,16 @@ export type PersonWithDebt = {
 
 function getAmount(
   type: DynacicPercentageValue,
-  percentageValue: number,
+  percentageValue: string | number,
   total: number,
   pricePerPerson: number
 ): number {
-  if (type === 'AMOUNT') return Number(percentageValue * total);
-  if (!percentageValue) return 0;
+  const formattedPercentageValue = Number(percentageValue);
 
-  return (percentageValue / 100) * pricePerPerson;
+  if (type === 'AMOUNT') return Number(formattedPercentageValue * total);
+  if (!formattedPercentageValue) return 0;
+
+  return (formattedPercentageValue / 100) * pricePerPerson;
 }
 
 function createArrOfDebts(
@@ -45,10 +47,8 @@ function createArrOfDebts(
   return arrPerson.map((person) => {
     let arrDebts: Debt[] = [];
 
-    const expensesPrice = items.map((item) => item.price);
-    const totalExpense = expensesPrice.reduce(
-      (prev, curr) => Number(prev) + Number(curr)
-    );
+    const expensesPrice = items.map((item) => Number(item.price));
+    const totalExpense = expensesPrice.reduce((prev, curr) => prev + curr);
 
     items.forEach((transaction) => {
       // check if person is not payer but includes as receiver
@@ -66,9 +66,9 @@ function createArrOfDebts(
 
         // count the ratio of current transaction price to total expense (before discount & tax)
         const ratioTransactionPriceToTotalExpense =
-          transaction.price / totalReceivers / totalExpense;
+          Number(transaction.price) / totalReceivers / totalExpense;
 
-        const pricePerPerson = transaction.price / totalReceivers;
+        const pricePerPerson = Number(transaction.price) / totalReceivers;
 
         // normalize discount
         const discountAmount = getAmount(

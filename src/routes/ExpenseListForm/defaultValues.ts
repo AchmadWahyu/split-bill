@@ -3,8 +3,7 @@ import { ExpenseType, ItemType } from './types';
 
 export const itemDefaultValues: ItemType = {
   title: '',
-  price: 0,
-  formattedStringPrice: '',
+  price: '0',
   payer: personDefaultValues,
   receiver: [''],
 };
@@ -12,15 +11,15 @@ export const itemDefaultValues: ItemType = {
 export const expenseDefaultValues: ExpenseType = {
   items: [itemDefaultValues],
   tax: {
-    value: 0,
+    value: '0',
     type: 'PERCENTAGE',
   },
   discount: {
-    value: 0,
+    value: '0',
     type: 'AMOUNT',
   },
   serviceCharge: {
-    value: 0,
+    value: '0',
     type: 'AMOUNT',
   },
 };
