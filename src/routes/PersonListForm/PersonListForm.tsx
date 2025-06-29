@@ -1,3 +1,4 @@
+import equal from 'fast-deep-equal';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { PersonType } from './types';
 import { useNavigate, useOutletContext, useParams } from 'react-router';
@@ -44,8 +45,6 @@ const PersonListForm = () => {
     name: 'personList',
   });
 
-  const updatedExpenseData = resetExpense(normalizedEventData.expense);
-
   if (!title) return <NotFoundPage />;
 
   return (
@@ -59,9 +58,13 @@ const PersonListForm = () => {
 
       <form
         onSubmit={handleSubmit((data) => {
+          const isPersonListChanged = !equal(personList, data.personList);
+
           const updatedEvent: EventType = {
             ...normalizedEventData,
-            expense: updatedExpenseData,
+            expense: isPersonListChanged
+              ? resetExpense(normalizedEventData.expense)
+              : normalizedEventData.expense,
             personList: data.personList,
           };
 
@@ -131,8 +134,13 @@ const PersonListForm = () => {
           primaryButtonText="Lanjut tambah pengeluaran"
           secondaryButtonText="Balik edit nama acara"
           onClickSecondaryButton={handleSubmit((data) => {
+            const isPersonListChanged = !equal(personList, data.personList);
+
             const updatedEvent: EventType = {
               ...normalizedEventData,
+              expense: isPersonListChanged
+                ? resetExpense(normalizedEventData.expense)
+                : normalizedEventData.expense,
               personList: data.personList,
             };
 
