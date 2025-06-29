@@ -1,4 +1,10 @@
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import {
+  Controller,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import {
   formatCurrencyIDR,
   formatThousandSeparator,
@@ -31,6 +37,9 @@ import {
 } from '@/constants/forms';
 import NotFoundPage from '../NotFoundPage';
 import { ToggleWrapper } from '@/components/ui/toggle-wrapper';
+import { useCallback, useRef } from 'react';
+import { findFirstErrorPath } from './utils';
+import { mergeRefs } from '@/utils/common';
 
 export type ExpenseListFormValues = {
   expense: ExpenseType;
@@ -70,13 +79,46 @@ const ExpenseListForm = ({
 
   const expenseError = errors?.expense;
 
-  if (!title) return <NotFoundPage />;
+  // Store refs for each input field
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const isTaxPercentage = getValues('expense.tax.type') === 'PERCENTAGE';
   const isDiscountPercentage =
     getValues('expense.discount.type') === 'PERCENTAGE';
   const isServiceChargePercentage =
     getValues('expense.serviceCharge.type') === 'PERCENTAGE';
+
+  const onSubmit: SubmitHandler<ExpenseListFormValues> = useCallback(
+    (data) => {
+      const updatedEvent = {
+        ...normalizedEventData,
+        expense: data.expense,
+      };
+
+      handleUpdateEventById(updatedEvent);
+      navigate(`/acara/${eventId}`);
+    },
+    [normalizedEventData, handleUpdateEventById, navigate, eventId]
+  );
+
+  const onError: SubmitErrorHandler<ExpenseListFormValues> = useCallback(
+    (err) => {
+      // Find the first error path
+      const firstErrorPath = findFirstErrorPath(err);
+
+      if (firstErrorPath) {
+        const refKey = firstErrorPath.join('.');
+        const ref = inputRefs.current[refKey];
+
+        if (ref && typeof ref.focus === 'function') {
+          ref.focus();
+        }
+      }
+    },
+    []
+  );
+
+  if (!title) return <NotFoundPage />;
 
   return (
     <main className="p-8 max-w-lg mx-auto">
@@ -87,15 +129,7 @@ const ExpenseListForm = ({
       </div>
 
       <form
-        onSubmit={handleSubmit((data) => {
-          const updatedEvent = {
-            ...normalizedEventData,
-            expense: data.expense,
-          };
-
-          handleUpdateEventById(updatedEvent);
-          navigate(`/acara/${eventId}`);
-        })}
+        onSubmit={handleSubmit(onSubmit, onError)}
         className="w-full max-w-md"
       >
         {fields.map((field, expenseItemIndex) => {
@@ -135,6 +169,15 @@ const ExpenseListForm = ({
                   defaultValue={field.title}
                   className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-4"
                   autoFocus
+                  type="text"
+                  ref={mergeRefs(
+                    register(`expense.items.${expenseItemIndex}.title`).ref,
+                    (el) => {
+                      inputRefs.current[
+                        `expense.items.${expenseItemIndex}.title`
+                      ] = el;
+                    }
+                  )}
                 />
 
                 {errorItem?.title?.message && (
@@ -150,7 +193,7 @@ const ExpenseListForm = ({
                 <Controller
                   name={`expense.items.${expenseItemIndex}.price`}
                   control={control}
-                  render={({ field: { onChange, value, ...rest } }) => (
+                  render={({ field: { onChange, value, ref, ...rest } }) => (
                     <Input
                       {...rest}
                       inputMode="numeric"
@@ -161,13 +204,17 @@ const ExpenseListForm = ({
                         const digitsOnly = unformatThousandSeparator(
                           e.target.value
                         );
-
                         onChange(digitsOnly);
                       }}
                       onFocus={(e) => {
                         e.target.select();
                       }}
                       className="w-full bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 mt-2"
+                      ref={mergeRefs(ref, (el) => {
+                        inputRefs.current[
+                          `expense.items.${expenseItemIndex}.price`
+                        ] = el;
+                      })}
                     />
                   )}
                   rules={{
@@ -201,13 +248,23 @@ const ExpenseListForm = ({
                       message: ERROR_MESSAGE_REQUIRED,
                     },
                   }}
-                  render={({ field }) => (
+                  render={({
+                    field: { ref, value, onChange, ...fieldProps },
+                  }) => (
                     <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
+                      value={value}
+                      onValueChange={onChange}
                       defaultValue={personList?.[0]?.name}
+                      {...fieldProps}
                     >
-                      <SelectTrigger className="bg-white border-slate-200 text-slate-900 w-full">
+                      <SelectTrigger
+                        className="bg-white border-slate-200 text-slate-900 w-full"
+                        ref={mergeRefs(ref, (el) => {
+                          inputRefs.current[
+                            `expense.items.${expenseItemIndex}.payer.name`
+                          ] = el;
+                        })}
+                      >
                         <SelectValue placeholder="Pilih anggota" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-slate-200 text-slate-900">
