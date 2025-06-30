@@ -1,4 +1,4 @@
-import { createArrOfDebts, normalizeArrOfDebts } from '../../utils/debts';
+import { creatDetailedTransactionsForEachPerson, createArrOfDebts, normalizeArrOfDebts, normalizeArrTransactionsForEachPerson } from '../../utils/debts';
 import { useNavigate, useParams } from 'react-router';
 import { EventType } from '../EventForm/types';
 import { eventDefaultValues } from '../EventForm/defaultValues';
@@ -16,12 +16,15 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import NotFoundPage from '../NotFoundPage';
+import { useState } from 'react';
 
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
   const navigate = useNavigate();
 
   const currentEvent = eventList?.find((event) => event.id === eventId);
+
+  const [activeTab, setActiveTab] = useState(0);
 
   const { title, personList, expense } = currentEvent || eventDefaultValues;
 
@@ -33,9 +36,14 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
 
+  const detailedTransactionsForEachPerson = creatDetailedTransactionsForEachPerson(expense, personListSToString);
+  const normalizedArrTransactionsForEachPerson = normalizeArrTransactionsForEachPerson(detailedTransactionsForEachPerson);
+  
+  console.log("AAA normalizedArrTransactionsForEachPerson", normalizedArrTransactionsForEachPerson);
+  
   return (
-    <main className="p-8 max-w-lg mx-auto">
-      <div className="text-left mb-8 flex gap-2 items-start justify-between">
+    <main className="max-w-lg mx-auto py-8">
+      <div className="text-left mb-4 flex gap-2 items-start justify-between mx-8">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">
           {title}
         </h1>
@@ -49,7 +57,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
         </Button>
       </div>
 
-      <div className="p-2 rounded-lg flex gap-2 text-slate-800 text-sm items-center">
+      <div className="p-2 rounded-lg flex gap-2 text-slate-800 text-sm items-center mx-8">
         <p>Datanya disimpan lokal di perangkat kamu</p>
 
         <Drawer>
@@ -90,7 +98,30 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
         </Drawer>
       </div>
 
-      <div className="flex flex-col gap-4 mt-4">
+      <div className="flex border-b border-gray-200 px-6 justify-around">
+        <button
+          className={`py-3 px-4 font-medium text-sm ${
+            activeTab === 0
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-500'
+          }`}
+          onClick={() => setActiveTab(0)}
+        >
+          Normalized Result
+        </button>
+        <button
+          className={`py-3 px-4 font-medium text-sm ${
+            activeTab === 1
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-500'
+          }`}
+          onClick={() => setActiveTab(1)}
+        >
+          Transaction Details
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-4 mt-4 mx-8">
         {finalResults.map((person) => {
           const filteredDebt = person.debts.filter(
             (d) => d?.totalDebtAfterDiscountAndTax
@@ -108,13 +139,15 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
         })}
       </div>
 
-      <Button
-        onClick={() => navigate('/')}
-        type="button"
-        className="w-full bg-primary hover:bg-primary-variant hover:bg-slate-800 text-white h-12 whitespace-normal mt-4"
-      >
-        Balik ke Home
-      </Button>
+      <div className="mx-8">
+        <Button
+          onClick={() => navigate('/')}
+          type="button"
+          className="w-full bg-primary hover:bg-primary-variant hover:bg-slate-800 text-white h-12 whitespace-normal mt-4"
+        >
+          Balik ke Home
+        </Button>
+      </div>
     </main>
   );
 };
