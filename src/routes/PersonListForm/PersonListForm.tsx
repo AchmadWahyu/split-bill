@@ -45,6 +45,8 @@ const PersonListForm = () => {
     name: 'personList',
   });
 
+  const handleAddNewPerson = () => append({ name: '' });
+
   if (!title) return <NotFoundPage />;
 
   return (
@@ -57,6 +59,12 @@ const PersonListForm = () => {
       </div>
 
       <form
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddNewPerson();
+          }
+        }}
         onSubmit={handleSubmit((data) => {
           const isPersonListChanged = !equal(personList, data.personList);
 
@@ -122,7 +130,7 @@ const PersonListForm = () => {
 
           <Button
             type="button"
-            onClick={() => append({ name: '' })}
+            onClick={handleAddNewPerson}
             className="grow-1 bg-primary hover:bg-primary-variant text-white"
           >
             Tambah anggota baru
