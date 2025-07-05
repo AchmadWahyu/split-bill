@@ -1,4 +1,9 @@
-import { creatDetailedTransactionsForEachPerson, createArrOfDebts, normalizeArrOfDebts, normalizeArrTransactionsForEachPerson } from '../../utils/debts';
+import {
+  creatDetailedTransactionsForEachPerson,
+  createArrOfDebts,
+  normalizeArrOfDebts,
+  normalizeArrTransactionsForEachPerson,
+} from '../../utils/debts';
 import { useNavigate, useParams } from 'react-router';
 import { EventType } from '../EventForm/types';
 import { eventDefaultValues } from '../EventForm/defaultValues';
@@ -17,6 +22,7 @@ import {
 } from '@/components/ui/drawer';
 import NotFoundPage from '../NotFoundPage';
 import { useState } from 'react';
+import { TransactionCard } from './TransactionCard';
 
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
@@ -36,11 +42,11 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
 
-  const detailedTransactionsForEachPerson = creatDetailedTransactionsForEachPerson(expense, personListSToString);
-  const normalizedArrTransactionsForEachPerson = normalizeArrTransactionsForEachPerson(detailedTransactionsForEachPerson);
-  
-  console.log("AAA normalizedArrTransactionsForEachPerson", normalizedArrTransactionsForEachPerson);
-  
+  const detailedTransactionsForEachPerson =
+    creatDetailedTransactionsForEachPerson(expense, personListSToString);
+  const normalizedArrTransactionsForEachPerson =
+    normalizeArrTransactionsForEachPerson(detailedTransactionsForEachPerson);
+
   return (
     <main className="max-w-lg mx-auto py-8">
       <div className="text-left mb-4 flex gap-2 items-start justify-between mx-8">
@@ -121,23 +127,44 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 mt-4 mx-8">
-        {finalResults.map((person) => {
-          const filteredDebt = person.debts.filter(
-            (d) => d?.totalDebtAfterDiscountAndTax
-          );
+      {activeTab === 0 && (
+        <div className="flex flex-col gap-4 mt-4 mx-8">
+          {finalResults.map((person) => {
+            const filteredDebt = person.debts.filter(
+              (d) => d?.totalDebtAfterDiscountAndTax
+            );
 
-          if (!filteredDebt?.length) return null;
+            if (!filteredDebt?.length) return null;
 
-          return (
-            <DebtCard
-              key={person.name}
-              debts={filteredDebt}
-              name={person.name}
-            />
-          );
-        })}
-      </div>
+            return (
+              <DebtCard
+                key={person.name}
+                debts={filteredDebt}
+                name={person.name}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {activeTab === 1 && (
+        <div className="flex flex-col gap-4 mt-4 mx-8">
+          {normalizedArrTransactionsForEachPerson.map((person) => {
+            const { name, transactions } = person;
+
+            if (!transactions?.length) return null;
+
+            return (
+              <TransactionCard
+                key={name}
+                debts={transactions}
+                name={name}
+                isTransactionDetails
+              />
+            );
+          })}
+        </div>
+      )}
 
       <div className="mx-8">
         <Button

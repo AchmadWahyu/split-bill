@@ -98,8 +98,8 @@ const TransactionSection = ({
   </div>
 );
 
-// --- Main DebtCard ---
-const DebtCard = ({ name, debts }: PersonWithDebt) => {
+// --- Main TransactionCard ---
+const TransactionCard = ({ name, debts }: PersonWithDebt) => {
   const hasMoreThanOneDebt = debts.length > 1;
 
   // Preprocess all data for subcomponents
@@ -217,5 +217,5 @@ const DebtCard = ({ name, debts }: PersonWithDebt) => {
   );
 };
 
-const MemoizedDebtCard = memo(DebtCard);
-export { MemoizedDebtCard as DebtCard };
+const MemoizedTransactionCard = memo(TransactionCard);
+export { MemoizedTransactionCard as TransactionCard };
