@@ -1,8 +1,12 @@
-import { creatDetailedTransactionsForEachPerson, createArrOfDebts, normalizeArrOfDebts, normalizeArrTransactionsForEachPerson } from '../../utils/debts';
+import {
+  creatDetailedTransactionsForEachPerson,
+  createArrOfDebts,
+  normalizeArrOfDebts,
+  normalizeArrTransactionsForEachPerson,
+} from '../../utils/debts';
 import { useNavigate, useParams } from 'react-router';
 import { EventType } from '../EventForm/types';
 import { eventDefaultValues } from '../EventForm/defaultValues';
-import { DebtCard } from './DebtCard';
 import { Button } from '@/components/ui/button';
 import { Info, Pencil } from 'lucide-react';
 import {
@@ -17,6 +21,14 @@ import {
 } from '@/components/ui/drawer';
 import NotFoundPage from '../NotFoundPage';
 import { useState } from 'react';
+import { TransactionCard } from './TransactionCard';
+import {
+  TransactionDebtCollapse,
+  TransactionPayTo,
+  TransactionSection,
+  TransactionTitle,
+} from './TransactionCard';
+import { formatCurrencyIDR } from '@/utils/currency';
 
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
@@ -36,11 +48,11 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
 
   const finalResults = normalizeArrOfDebts(arrOfDebts);
 
-  const detailedTransactionsForEachPerson = creatDetailedTransactionsForEachPerson(expense, personListSToString);
-  const normalizedArrTransactionsForEachPerson = normalizeArrTransactionsForEachPerson(detailedTransactionsForEachPerson);
-  
-  console.log("AAA normalizedArrTransactionsForEachPerson", normalizedArrTransactionsForEachPerson);
-  
+  const detailedTransactionsForEachPerson =
+    creatDetailedTransactionsForEachPerson(expense, personListSToString);
+  const normalizedArrTransactionsForEachPerson =
+    normalizeArrTransactionsForEachPerson(detailedTransactionsForEachPerson);
+
   return (
     <main className="max-w-lg mx-auto py-8">
       <div className="text-left mb-4 flex gap-2 items-start justify-between mx-8">
@@ -107,7 +119,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
           }`}
           onClick={() => setActiveTab(0)}
         >
-          Normalized Result
+          Ringkasan
         </button>
         <button
           className={`py-3 px-4 font-medium text-sm ${
@@ -117,27 +129,204 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
           }`}
           onClick={() => setActiveTab(1)}
         >
-          Transaction Details
+          Rincian
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 mt-4 mx-8">
-        {finalResults.map((person) => {
-          const filteredDebt = person.debts.filter(
-            (d) => d?.totalDebtAfterDiscountAndTax
-          );
+      {activeTab === 0 && (
+        <div className="flex flex-col gap-4 mt-4 mx-8">
+          {finalResults.map((person) => {
+            const filteredDebt = person.debts.filter(
+              (d) => d?.totalDebtAfterDiscountAndTax
+            );
 
-          if (!filteredDebt?.length) return null;
+            if (!filteredDebt?.length) return null;
 
-          return (
-            <DebtCard
-              key={person.name}
-              debts={filteredDebt}
-              name={person.name}
-            />
-          );
-        })}
-      </div>
+            return (
+              <TransactionCard key={person.name}>
+                <TransactionTitle>{person.name}</TransactionTitle>
+                <TransactionPayTo prefix="Bayar ke:">
+                  {filteredDebt.map((debt, idx) => {
+                    // Prepare adjustments and subtotals for TransactionSection
+                    const debtAdjustments = {
+                      tax: debt.transactions.reduce(
+                        (prev, curr) => prev + curr.tax,
+                        0
+                      ),
+                      service: debt.transactions.reduce(
+                        (prev, curr) => prev + curr.serviceCharge,
+                        0
+                      ),
+                      discount: debt.transactions.reduce(
+                        (prev, curr) => prev + curr.discount,
+                        0
+                      ),
+                    };
+                    const surplusAdjustments = {
+                      tax: debt.surplus.reduce(
+                        (prev, curr) => prev + curr.tax,
+                        0
+                      ),
+                      service: debt.surplus.reduce(
+                        (prev, curr) => prev + curr.serviceCharge,
+                        0
+                      ),
+                      discount: debt.surplus.reduce(
+                        (prev, curr) => prev + curr.discount,
+                        0
+                      ),
+                    };
+                    const debtSubtotal = debt.transactions.reduce(
+                      (prev, curr) => prev + curr.debtAfterDiscountAndTax,
+                      0
+                    );
+                    const surplusSubtotal = debt.surplus.reduce(
+                      (prev, curr) => prev + curr.debtAfterDiscountAndTax,
+                      0
+                    );
+                    const hasSurplus = debt.surplus.length > 0;
+
+                    return (
+                      <TransactionDebtCollapse
+                        keyProp={debt.payer}
+                        headerContent={
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-l font-semibold text-slate-900">
+                                {debt.payer}
+                              </p>
+                              <p className="text-sm text-slate-400">
+                                Tap untuk lihat detail
+                              </p>
+                            </div>
+                            <p className="text-xl font-semibold text-slate-900">
+                              {formatCurrencyIDR(
+                                debt.totalDebtAfterDiscountAndTax
+                              )}
+                            </p>
+                          </div>
+                        }
+                        className={`mt-2 pb-4${
+                          filteredDebt.length > 1 &&
+                          idx !== filteredDebt.length - 1
+                            ? ' border-b-1'
+                            : ''
+                        }`}
+                      >
+                        <div className="flex flex-col gap-2 ml-8 pl-4 border-l-2 mt-4">
+                          <TransactionSection
+                            name={person.name}
+                            payer={debt.payer}
+                            items={debt.transactions.map((t) => ({
+                              title: t.title,
+                              basePrice: t.basePrice,
+                            }))}
+                            adjustments={debtAdjustments}
+                            subtotal={debtSubtotal}
+                            icon="🔻"
+                            color="red"
+                            sign="-"
+                            label="ditraktir"
+                          />
+                          {hasSurplus && (
+                            <TransactionSection
+                              name={person.name}
+                              payer={debt.payer}
+                              items={debt.surplus.map((s) => ({
+                                title: s.title,
+                                basePrice: s.basePrice,
+                              }))}
+                              adjustments={surplusAdjustments}
+                              subtotal={surplusSubtotal}
+                              icon="🟢"
+                              color="emerald"
+                              sign="+"
+                              label="mentraktir"
+                            />
+                          )}
+                        </div>
+                      </TransactionDebtCollapse>
+                    );
+                  })}
+                </TransactionPayTo>
+              </TransactionCard>
+            );
+          })}
+        </div>
+      )}
+
+      {activeTab === 1 && (
+        <div className="flex flex-col gap-4 mt-4 mx-8">
+          {normalizedArrTransactionsForEachPerson.map((person) => {
+            const { name, transactions } = person;
+
+            if (!transactions?.length) return null;
+
+            const totalDebtAfterDiscountAndTax = transactions.reduce(
+              (acc, curr) => acc + curr.debtAfterDiscountAndTax,
+              0
+            );
+
+            const debtAdjustments = {
+              tax: transactions.reduce((prev, curr) => prev + curr.tax, 0),
+              service: transactions.reduce(
+                (prev, curr) => prev + curr.serviceCharge,
+                0
+              ),
+              discount: transactions.reduce(
+                (prev, curr) => prev + curr.discount,
+                0
+              ),
+            };
+
+            const debtSubtotal = transactions.reduce(
+              (prev, curr) => prev + curr.debtAfterDiscountAndTax,
+              0
+            );
+
+            return (
+              <TransactionCard key={person.name}>
+                <TransactionTitle>{person.name}</TransactionTitle>
+                <TransactionPayTo>
+                  <TransactionDebtCollapse
+                    keyProp={name}
+                    headerContent={
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-l font-semibold text-slate-900">
+                            Rincian Transaksi: 
+                          </p>
+                          <p className="text-sm text-slate-400">
+                            Tap untuk lihat detail
+                          </p>
+                        </div>
+                        <p className="text-xl font-semibold text-slate-900">
+                          {formatCurrencyIDR(totalDebtAfterDiscountAndTax)}
+                        </p>
+                      </div>
+                    }
+                    className={`mt-2 pb-4${''}`}
+                  >
+                    <div className="flex flex-col gap-2 ml-8 pl-4 border-l-2 mt-4">
+                      <TransactionSection
+                        items={transactions.map((t) => ({
+                          title: t.title,
+                          basePrice: t.basePrice,
+                        }))}
+                        adjustments={debtAdjustments}
+                        subtotal={debtSubtotal}
+                        color="red"
+                        sign="-"
+                        variant="transaction"
+                      />
+                    </div>
+                  </TransactionDebtCollapse>
+                </TransactionPayTo>
+              </TransactionCard>
+            );
+          })}
+        </div>
+      )}
 
       <div className="mx-8">
         <Button

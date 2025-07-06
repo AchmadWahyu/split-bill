@@ -3,7 +3,7 @@ import {
   ExpenseType,
 } from '../routes/ExpenseListForm/types';
 
-type Transaction = {
+export type Transaction = {
   title: string;
   debtAfterDiscountAndTax: number;
   basePrice: number;
