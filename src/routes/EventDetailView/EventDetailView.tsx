@@ -224,7 +224,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
                             adjustments={debtAdjustments}
                             subtotal={debtSubtotal}
                             icon="🔻"
-                            color="red"
+                            color="negative"
                             sign="-"
                             label="ditraktir"
                           />
@@ -239,7 +239,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
                               adjustments={surplusAdjustments}
                               subtotal={surplusSubtotal}
                               icon="🟢"
-                              color="emerald"
+                              color="positive"
                               sign="+"
                               label="mentraktir"
                             />
@@ -294,7 +294,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-l font-semibold text-slate-900">
-                            Rincian Transaksi: 
+                            Rincian Transaksi:
                           </p>
                           <p className="text-sm text-slate-400">
                             Tap untuk lihat detail
@@ -315,7 +315,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
                         }))}
                         adjustments={debtAdjustments}
                         subtotal={debtSubtotal}
-                        color="red"
+                        color="negative"
                         sign="-"
                         variant="transaction"
                       />
