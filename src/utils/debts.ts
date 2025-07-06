@@ -3,7 +3,7 @@ import {
   ExpenseType,
 } from '../routes/ExpenseListForm/types';
 
-type Transaction = {
+export type Transaction = {
   title: string;
   debtAfterDiscountAndTax: number;
   basePrice: number;
@@ -32,7 +32,7 @@ function getAmount(
 ): number {
   const formattedPercentageValue = Number(percentageValue);
 
-  if (type === 'AMOUNT') return Number(formattedPercentageValue * total);
+  if (type === 'AMOUNT') return formattedPercentageValue * Number(total);
   if (!formattedPercentageValue) return 0;
 
   return (formattedPercentageValue / 100) * pricePerPerson;
@@ -198,4 +198,106 @@ function normalizeArrOfDebts(
   }));
 }
 
-export { createArrOfDebts, normalizeArrOfDebts };
+type ArrTransaction = {
+  name: string;
+  transactions: Transaction[];
+};
+
+function creatDetailedTransactionsForEachPerson(
+  expense: ExpenseType,
+  personListSToString: string[]
+): ArrTransaction[] {
+  const { items, discount, tax, serviceCharge } = expense;
+
+  return personListSToString.map((person) => {
+    const arrTransactions: Transaction[] = [];
+
+    items.forEach((transaction) => {
+      if (transaction.receiver.includes(person)) {
+        const totalReceivers = transaction.receiver?.filter((r) =>
+          Boolean(r)
+        )?.length;
+
+        const expensesPrice = items.map((item) => Number(item.price));
+        const totalExpense = expensesPrice.reduce((prev, curr) => prev + curr);
+
+        // count the ratio of current transaction price to total expense (before discount & tax)
+        const ratioTransactionPriceToTotalExpense =
+          Number(transaction.price) / totalReceivers / totalExpense;
+
+        const pricePerPerson = Number(transaction.price) / totalReceivers;
+
+        // normalize discount
+        const discountAmount = getAmount(
+          discount.type,
+          discount.value,
+          ratioTransactionPriceToTotalExpense,
+          pricePerPerson
+        );
+
+        // normalize tax
+        const taxAmount = getAmount(
+          tax.type,
+          tax.value,
+          ratioTransactionPriceToTotalExpense,
+          pricePerPerson
+        );
+
+        // normalize service charge
+        const serviceChargeAmount = getAmount(
+          serviceCharge.type,
+          serviceCharge.value,
+          ratioTransactionPriceToTotalExpense,
+          pricePerPerson
+        );
+
+        // count the total price after discount, tax, and service charge
+        const debtAfterDiscountTaxServiceCharge =
+          pricePerPerson - discountAmount + taxAmount + serviceChargeAmount;
+
+        arrTransactions.push({
+          title: transaction.title,
+          debtAfterDiscountAndTax: debtAfterDiscountTaxServiceCharge,
+          basePrice: pricePerPerson,
+          discount: discountAmount,
+          tax: taxAmount,
+          serviceCharge: serviceChargeAmount,
+        });
+      }
+    });
+
+    return {
+      name: person,
+      transactions: arrTransactions,
+    };
+  });
+}
+
+function normalizeArrTransactionsForEachPerson(
+  arrTransaction: ArrTransaction[]
+) {
+  return arrTransaction.map((transaction) => {
+    return {
+      ...transaction,
+      totalDiscount: transaction.transactions.reduce(
+        (prev, curr) => prev + curr.discount,
+        0
+      ),
+      totalTax: transaction.transactions.reduce(
+        (prev, curr) => prev + curr.tax,
+        0
+      ),
+      totalServiceCharge: transaction.transactions.reduce(
+        (prev, curr) => prev + curr.serviceCharge,
+        0
+      ),
+    };
+  });
+}
+
+export {
+  createArrOfDebts,
+  normalizeArrOfDebts,
+  creatDetailedTransactionsForEachPerson,
+  normalizeArrTransactionsForEachPerson,
+};
