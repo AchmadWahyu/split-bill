@@ -40,7 +40,7 @@ const Home = ({
         </h1>
 
         {!hasNoTransacton && (
-          <p className="text-muted-foreground mt-4 mb-6 max-w-md">
+          <p className="text-muted-foreground mt-4 mb-6">
             Split bill simpel, cepet, bareng-bareng!
           </p>
         )}
