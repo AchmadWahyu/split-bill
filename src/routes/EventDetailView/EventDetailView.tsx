@@ -5,6 +5,7 @@ import {
   normalizeArrTransactionsForEachPerson,
 } from '../../utils/debts';
 import { useNavigate, useParams } from 'react-router';
+import { useKeenSlider } from 'keen-slider/react';
 import { EventType } from '../EventForm/types';
 import { eventDefaultValues } from '../EventForm/defaultValues';
 import { Button } from '@/components/ui/button';
@@ -20,7 +21,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import NotFoundPage from '../NotFoundPage';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { TransactionCard } from './TransactionCard';
 import {
   TransactionDebtCollapse,
@@ -30,6 +31,9 @@ import {
 } from './TransactionCard';
 import { formatCurrencyIDR } from '@/utils/currency';
 
+import 'keen-slider/keen-slider.min.css';
+import { cn } from '@/lib/utils';
+
 const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const { eventId } = useParams();
   const navigate = useNavigate();
@@ -37,6 +41,23 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
   const currentEvent = eventList?.find((event) => event.id === eventId);
 
   const [activeTab, setActiveTab] = useState(0);
+  const [ref, instanceRef] = useKeenSlider<HTMLDivElement>({
+    mode: 'snap',
+    slideChanged: (slider) => {
+      const index = slider.track.details.rel;
+      setActiveTab(index);
+    },
+  });
+
+  const goToFirstTab = useCallback(() => {
+    setActiveTab(0);
+    instanceRef.current?.prev();
+  }, [instanceRef]);
+
+  const goToSecondTab = useCallback(() => {
+    setActiveTab(1);
+    instanceRef.current?.next();
+  }, [instanceRef]);
 
   const { title, personList, expense } = currentEvent || eventDefaultValues;
 
@@ -112,29 +133,31 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
 
       <div className="flex border-b border-gray-200 px-6 justify-around">
         <button
-          className={`py-3 px-4 font-medium text-sm ${
+          className={`py-3 px-4 font-medium text-sm w-2xl ${
             activeTab === 0
               ? 'text-slate-900 border-b-2 border-slate-900'
               : 'text-slate-500'
           }`}
-          onClick={() => setActiveTab(0)}
+          onClick={goToFirstTab}
         >
           Ringkasan
         </button>
         <button
-          className={`py-3 px-4 font-medium text-sm ${
+          className={`py-3 px-4 font-medium text-sm w-2xl ${
             activeTab === 1
               ? 'text-slate-900 border-b-2 border-slate-900'
               : 'text-slate-500'
           }`}
-          onClick={() => setActiveTab(1)}
+          onClick={goToSecondTab}
         >
           Rincian
         </button>
       </div>
 
-      {activeTab === 0 && (
-        <div className="flex flex-col gap-4 mt-4 mx-8">
+      <div ref={ref} className="keen-slider">
+        <div
+          className={cn('flex flex-col gap-4 mt-4 px-8', 'keen-slider__slide')}
+        >
           {finalResults.map((person) => {
             const filteredDebt = person.debts.filter(
               (d) => d?.totalDebtAfterDiscountAndTax
@@ -253,10 +276,10 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
             );
           })}
         </div>
-      )}
 
-      {activeTab === 1 && (
-        <div className="flex flex-col gap-4 mt-4 mx-8">
+        <div
+          className={cn('flex flex-col gap-4 mt-4 px-8', 'keen-slider__slide')}
+        >
           {normalizedArrTransactionsForEachPerson.map((person) => {
             const { name, transactions } = person;
 
@@ -326,7 +349,7 @@ const EventDetailView = ({ eventList }: { eventList: EventType[] }) => {
             );
           })}
         </div>
-      )}
+      </div>
 
       <div className="mx-8">
         <Button
