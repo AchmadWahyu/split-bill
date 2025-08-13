@@ -21,7 +21,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    
+    "types": ["vitest/globals"],
+
     // shadcn
     "baseUrl": ".",
     "paths": {
