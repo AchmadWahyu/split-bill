@@ -1,0 +1,41 @@
+[
+  {
+    "id": "event-double-payer-with-discount-service-charge",
+    "title": "Double Payer - Multiple Person - With Discount & Service Charge",
+    "personList": [
+      { "name": "Andi" },
+      { "name": "Budi" },
+      { "name": "Cici" }
+    ],
+    "expense": {
+      "items": [
+        {
+          "title": "Makan Siang",
+          "price": "150000",
+          "payer": { "name": "Andi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        },
+        {
+          "title": "Kopi",
+          "price": "90000",
+          "payer": { "name": "Budi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        }
+      ],
+      "tax": {
+        "value": "0",
+        "type": "PERCENTAGE"
+      },
+      "discount": {
+        "value": "15000",
+        "type": "AMOUNT"
+      },
+      "serviceCharge": {
+        "value": "5000",
+        "type": "AMOUNT"
+      }
+    }
+  }
+]
+
+
