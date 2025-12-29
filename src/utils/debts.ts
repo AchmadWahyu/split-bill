@@ -78,20 +78,23 @@ function createArrOfDebts(
           pricePerPerson
         );
 
-        // normalize tax
-        const taxAmount = getAmount(
-          tax.type,
-          tax.value,
-          ratioTransactionPriceToTotalExpense,
-          pricePerPerson
-        );
-
         // normalize service charge
         const serviceChargeAmount = getAmount(
           serviceCharge.type,
           serviceCharge.value,
           ratioTransactionPriceToTotalExpense,
           pricePerPerson
+        );
+
+        // calculate adjusted price after discount and service charge
+        const adjustedPrice = pricePerPerson - discountAmount + serviceChargeAmount;
+
+        // normalize tax - applied last, after discount and service charge
+        const taxAmount = getAmount(
+          tax.type,
+          tax.value,
+          ratioTransactionPriceToTotalExpense,
+          adjustedPrice
         );
 
         // count the total price after discount, tax, and service charge
@@ -235,20 +238,23 @@ function creatDetailedTransactionsForEachPerson(
           pricePerPerson
         );
 
-        // normalize tax
-        const taxAmount = getAmount(
-          tax.type,
-          tax.value,
-          ratioTransactionPriceToTotalExpense,
-          pricePerPerson
-        );
-
         // normalize service charge
         const serviceChargeAmount = getAmount(
           serviceCharge.type,
           serviceCharge.value,
           ratioTransactionPriceToTotalExpense,
           pricePerPerson
+        );
+
+        // calculate adjusted price after discount and service charge
+        const adjustedPrice = pricePerPerson - discountAmount + serviceChargeAmount;
+
+        // normalize tax - applied last, after discount and service charge
+        const taxAmount = getAmount(
+          tax.type,
+          tax.value,
+          ratioTransactionPriceToTotalExpense,
+          adjustedPrice
         );
 
         // count the total price after discount, tax, and service charge
