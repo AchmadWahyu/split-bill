@@ -23,9 +23,9 @@ test.describe('Single Payer - Multiple Person - With Tax', () => {
     // Verify the event shows 3 people
     await expect(page.getByText('3 orang')).toBeVisible();
 
-    // Verify total expense is displayed (150000 + 60000 = 210000)
-    // Format: Rp 210.000 (Indonesian format)
-    await expect(page.getByText(/Rp\s*210[.,]000/i)).toBeVisible();
+    // Verify total expense is displayed (210000 + 10% tax = 231000)
+    // Format: Rp 231.000 (Indonesian format)
+    await expect(page.getByText(/Rp\s*231[.,]000/i)).toBeVisible();
 
     // Click on the event card to view details
     await eventTitle.click();

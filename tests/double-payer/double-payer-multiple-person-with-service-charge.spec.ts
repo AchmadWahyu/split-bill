@@ -23,9 +23,9 @@ test.describe('Double Payer - Multiple Person - With Service Charge', () => {
     // Verify the event shows 3 people
     await expect(page.getByText('3 orang')).toBeVisible();
 
-    // Verify total expense is displayed (150000 + 90000 = 240000)
-    // Format: Rp 240.000 (Indonesian format)
-    await expect(page.getByText(/Rp\s*240[.,]000/i)).toBeVisible();
+    // Verify total expense is displayed (240000 + 5000 = 245000)
+    // Format: Rp 245.000 (Indonesian format)
+    await expect(page.getByText(/Rp\s*245[.,]000/i)).toBeVisible();
 
     // Click on the event card to view details
     await eventTitle.click();
