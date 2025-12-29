@@ -1,0 +1,41 @@
+[
+  {
+    "id": "event-double-payer-no-discount-tax-service",
+    "title": "Double Payer - Multiple Person - No Discount/Tax/Service",
+    "personList": [
+      { "name": "Andi" },
+      { "name": "Budi" },
+      { "name": "Cici" }
+    ],
+    "expense": {
+      "items": [
+        {
+          "title": "Makan Siang",
+          "price": "150000",
+          "payer": { "name": "Andi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        },
+        {
+          "title": "Kopi",
+          "price": "90000",
+          "payer": { "name": "Budi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        }
+      ],
+      "tax": {
+        "value": "0",
+        "type": "PERCENTAGE"
+      },
+      "discount": {
+        "value": "0",
+        "type": "AMOUNT"
+      },
+      "serviceCharge": {
+        "value": "0",
+        "type": "AMOUNT"
+      }
+    }
+  }
+]
+
+

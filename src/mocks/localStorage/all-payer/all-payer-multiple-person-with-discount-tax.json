@@ -1,0 +1,47 @@
+[
+  {
+    "id": "event-all-payer-with-discount-tax",
+    "title": "All Person is Payer - Multiple Person - With Discount & Tax",
+    "personList": [
+      { "name": "Andi" },
+      { "name": "Budi" },
+      { "name": "Cici" }
+    ],
+    "expense": {
+      "items": [
+        {
+          "title": "Sarapan",
+          "price": "60000",
+          "payer": { "name": "Andi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        },
+        {
+          "title": "Makan Siang",
+          "price": "90000",
+          "payer": { "name": "Budi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        },
+        {
+          "title": "Makan Malam",
+          "price": "120000",
+          "payer": { "name": "Cici" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        }
+      ],
+      "tax": {
+        "value": "10",
+        "type": "PERCENTAGE"
+      },
+      "discount": {
+        "value": "20000",
+        "type": "AMOUNT"
+      },
+      "serviceCharge": {
+        "value": "0",
+        "type": "AMOUNT"
+      }
+    }
+  }
+]
+
+

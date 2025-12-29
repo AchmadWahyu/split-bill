@@ -1,0 +1,41 @@
+[
+  {
+    "id": "event-single-payer-with-discount",
+    "title": "Single Payer - Multiple Person - With Discount",
+    "personList": [
+      { "name": "Andi" },
+      { "name": "Budi" },
+      { "name": "Cici" }
+    ],
+    "expense": {
+      "items": [
+        {
+          "title": "Makan Siang",
+          "price": "150000",
+          "payer": { "name": "Andi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        },
+        {
+          "title": "Minuman",
+          "price": "60000",
+          "payer": { "name": "Andi" },
+          "receiver": ["Andi", "Budi", "Cici"]
+        }
+      ],
+      "tax": {
+        "value": "0",
+        "type": "PERCENTAGE"
+      },
+      "discount": {
+        "value": "10000",
+        "type": "AMOUNT"
+      },
+      "serviceCharge": {
+        "value": "0",
+        "type": "AMOUNT"
+      }
+    }
+  }
+]
+
+
