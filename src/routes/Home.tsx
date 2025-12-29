@@ -3,7 +3,7 @@ import { EventType } from './EventForm/types';
 import { Plus, Trash2, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatCurrencyIDR } from '../utils/currency';
+import { formatCurrencyIDR, calculateTotalExpense } from '../utils/currency';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -59,12 +59,7 @@ const Home = ({
 
       <div className="grid gap-4 md:grid-cols-2">
         {eventList.map((event) => {
-          const expensesPrice = event.expense.items.map((item) =>
-            Number(item.price)
-          );
-          const totalExpense = expensesPrice.reduce(
-            (prev, curr) => prev + curr
-          );
+          const totalExpense = calculateTotalExpense(event.expense);
 
           return (
             <Card
