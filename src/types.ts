@@ -1,13 +1,15 @@
-import { PersonType } from '../PersonListForm/types';
+export type PersonType = {
+  name: string;
+};
+
+export type DynacicPercentageValue = 'PERCENTAGE' | 'AMOUNT';
 
 export type ItemType = {
   title: string;
   price: string;
-  payer: PersonType;
+  payer?: PersonType;
   receiver: string[];
 };
-
-export type DynacicPercentageValue = 'PERCENTAGE' | 'AMOUNT';
 
 export type ExpenseType = {
   items: ItemType[];
@@ -23,4 +25,11 @@ export type ExpenseType = {
     value: string;
     type: DynacicPercentageValue;
   };
+};
+
+export type EventType = {
+  id: string;
+  title: string;
+  personList: PersonType[];
+  expense: ExpenseType;
 };
