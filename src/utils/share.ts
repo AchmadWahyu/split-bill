@@ -44,14 +44,14 @@ export function formatShareText(
 
   lines.push('');
   lines.push('──────────────');
-  lines.push('Split pakai SplitBareng ✨');
+  lines.push('Via https://split.achwahyu.com');
 
   return lines.join('\n');
 }
 
 export function shareToWhatsApp(text: string): void {
   const encoded = encodeURIComponent(text);
-  window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
 }
 
 export async function copyToClipboard(text: string): Promise<void> {
