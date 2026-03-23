@@ -237,11 +237,33 @@ export default function AddExpensePage({
      <div className="w-10" />
     </div>
 
-    {/* Person strip */}
-    <div className="px-5 py-4 overflow-x-auto">
-     <div className="flex items-start gap-4">
-      {/* Add button */}
-      <div className="flex flex-col gap-1 items-center shrink-0">
+    {/* Person strip: avatars scroll horizontally; Tambah stays fixed on the right */}
+    <div className="px-5 py-4 flex flex-col gap-2">
+     <div className="flex items-start gap-0 min-h-[72px]">
+      <div className="flex-1 min-w-0 overflow-x-auto [scrollbar-width:thin]">
+       <div className="flex items-start gap-4 pr-3 mt-2">
+        {personList.map((name, index) => (
+         <div
+          key={name}
+          className="flex flex-col gap-1 items-center relative group shrink-0"
+         >
+          <PersonAvatar name={name} colorIndex={index} size="md" />
+          <span className="text-[12px] text-slate-700 font-medium max-w-[48px] truncate tracking-tight">
+           {name}
+          </span>
+          <button
+           type="button"
+           onClick={() => handleRemovePerson(name)}
+           className="absolute -top-1 -right-1 size-5 rounded-full bg-slate-400 text-white flex items-center justify-center cursor-pointer hover:bg-red-500 transition-all"
+          >
+           <X className="size-2.5" />
+          </button>
+         </div>
+        ))}
+       </div>
+      </div>
+
+      <div className="shrink-0 flex flex-col gap-1 items-center self-stretch justify-center pl-3 border-l border-slate-200/90 bg-[rgba(246,248,246,0.98)] shadow-[-8px_0_12px_-8px_rgba(0,0,0,0.08)]">
        <button
         type="button"
         onClick={() => setShowPersonDialog(true)}
@@ -253,31 +275,11 @@ export default function AddExpensePage({
         Tambah
        </span>
       </div>
-
-      {/* Person avatars */}
-      {personList.map((name, index) => (
-       <div
-        key={name}
-        className="flex flex-col gap-1 items-center relative group shrink-0"
-       >
-        <PersonAvatar name={name} colorIndex={index} size="md" />
-        <span className="text-[12px] text-slate-700 font-medium max-w-[48px] truncate tracking-tight">
-         {name}
-        </span>
-        <button
-         type="button"
-         onClick={() => handleRemovePerson(name)}
-         className="absolute -top-1 -right-1 size-5 rounded-full bg-slate-400 text-white flex items-center justify-center cursor-pointer hover:bg-red-500 transition-all"
-        >
-         <X className="size-2.5" />
-        </button>
-       </div>
-      ))}
      </div>
      {errors.personList?.message && (
       <ErrorMessageForm
        text={errors.personList.message}
-       className="ml-0 mt-2"
+       className="ml-0 mt-0"
       />
      )}
     </div>

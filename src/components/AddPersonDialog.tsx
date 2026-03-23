@@ -89,7 +89,7 @@ export function AddPersonDialog({
           {filteredSuggestions.length > 0 && (
             <div>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tight mb-2">
-                Nama yang terakhir dipakai
+                Nama yang terakhir kamu pakai
               </p>
               <div className="flex flex-wrap gap-2">
                 {filteredSuggestions.map((suggestion) => (
