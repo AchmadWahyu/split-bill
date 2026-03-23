@@ -1,12 +1,11 @@
 import { Route, Routes } from 'react-router';
 import Home from './routes/Home';
-import EventForm from './routes/EventForm/EventForm';
-import PersonListForm from './routes/PersonListForm/PersonListForm';
-import ExpenseListForm from './routes/ExpenseListForm/ExpenseListForm';
+import AddExpensePage from './routes/AddExpensePage';
+import EventResultPage from './routes/EventResultPage';
+import FeedbackPage from './routes/FeedbackPage';
+import ScanReceiptPage from './routes/ScanReceiptPage';
 import { useState } from 'react';
-import { EventType } from './routes/EventForm/types';
-import EventDetailView from './routes/EventDetailView/EventDetailView';
-import EventFormLayout from './routes/EventFormLayout';
+import { EventType } from './types';
 import { normalizeEventListData } from './utils/normalizer';
 
 function App() {
@@ -57,26 +56,28 @@ function App() {
           />
         }
       />
+      <Route path="feedback" element={<FeedbackPage />} />
       <Route path="acara">
         <Route
           path=":eventId"
-          element={<EventDetailView eventList={eventList} />}
+          element={
+            <EventResultPage
+              eventList={eventList}
+              handleUpdateEventById={handleUpdateEventById}
+            />
+          }
         />
         <Route
           path=":eventId/edit"
-          element={<EventFormLayout eventList={eventList} />}
-        >
-          <Route path="general" element={<EventForm />} />
-          <Route path="anggota" element={<PersonListForm />} />
-          <Route
-            path="transaksi"
-            element={
-              <ExpenseListForm handleUpdateEventById={handleUpdateEventById} />
-            }
-          />
-        </Route>
+          element={
+            <AddExpensePage
+              eventList={eventList}
+              handleUpdateEventById={handleUpdateEventById}
+            />
+          }
+        />
+        <Route path=":eventId/scan" element={<ScanReceiptPage />} />
       </Route>
-      {/* <Route path='*' element={ <h1>Test 404</h1>}/> */}
     </Routes>
   );
 }
