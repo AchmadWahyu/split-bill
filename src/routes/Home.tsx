@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router';
 import { EventType } from '@/types';
-import { Plus, Trash2, Users } from 'lucide-react';
+import Plus from 'lucide-react/dist/esm/icons/plus';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
+import Users from 'lucide-react/dist/esm/icons/users';
 import { Button } from '@/components/ui/button';
 import { formatCurrencyIDR, calculateTotalExpense } from '../utils/currency';
 import {
@@ -21,8 +23,8 @@ const Home = ({
   handleDeleteEventById: (eventId: string) => void;
 }) => {
   const navigate = useNavigate();
-  const eventId = crypto.randomUUID();
-  const url = `/acara/${eventId}/edit`;
+  const [newEventId] = useState(() => crypto.randomUUID());
+  const url = `/acara/${newEventId}/edit`;
 
   const [showDialog, setShowDialog] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string>('');

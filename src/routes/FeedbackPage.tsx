@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ArrowLeft, CheckCircle2, MessageSquareHeart } from 'lucide-react';
+import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
+import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
+import MessageSquareHeart from 'lucide-react/dist/esm/icons/message-square-heart';
 import { cn } from '@/lib/utils';
 
 const RATING_OPTIONS = [

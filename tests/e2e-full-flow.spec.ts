@@ -43,7 +43,7 @@ test.describe('E2E full flow', () => {
     await page.locator('input[inputmode="numeric"]').first().fill('60000');
 
     // 2g. Assign Joko and Sukiyem to first item (click avatars with JO and SU)
-    const item1 = page.locator('form').locator('div.bg-white.border.border-gray-100').first();
+    const item1 = page.locator('form').locator('div.bg-white.border.border-slate-100').first();
     await item1.getByRole('button', { name: 'JO' }).click();
     await item1.getByRole('button', { name: 'SU' }).click();
 
@@ -52,12 +52,12 @@ test.describe('E2E full flow', () => {
     await page.waitForTimeout(100);
 
     // 2i. Second item: Pizza, 125000
-    const item2Inputs = page.locator('form').locator('div.bg-white.border.border-gray-100').nth(1);
+    const item2Inputs = page.locator('form').locator('div.bg-white.border.border-slate-100').nth(1);
     await item2Inputs.getByPlaceholder('Nama item').fill('Pizza');
     await item2Inputs.locator('input[inputmode="numeric"]').first().fill('125000');
 
     // 2j. Assign all three to second item
-    const item2 = page.locator('form').locator('div.bg-white.border.border-gray-100').nth(1);
+    const item2 = page.locator('form').locator('div.bg-white.border.border-slate-100').nth(1);
     await item2.getByRole('button', { name: 'JO' }).click();
     await item2.getByRole('button', { name: 'EK' }).click();
     await item2.getByRole('button', { name: 'SU' }).click();
@@ -67,12 +67,12 @@ test.describe('E2E full flow', () => {
     await page.waitForTimeout(100);
 
     // 2l. Third item: Jus Alpukat, 96000
-    const item3Inputs = page.locator('form').locator('div.bg-white.border.border-gray-100').nth(2);
+    const item3Inputs = page.locator('form').locator('div.bg-white.border.border-slate-100').nth(2);
     await item3Inputs.getByPlaceholder('Nama item').fill('Jus Alpukat');
     await item3Inputs.locator('input[inputmode="numeric"]').first().fill('96000');
 
     // 2m. Assign all three to third item
-    const item3 = page.locator('form').locator('div.bg-white.border.border-gray-100').nth(2);
+    const item3 = page.locator('form').locator('div.bg-white.border.border-slate-100').nth(2);
     await item3.getByRole('button', { name: 'JO' }).click();
     await item3.getByRole('button', { name: 'EK' }).click();
     await item3.getByRole('button', { name: 'SU' }).click();

@@ -36,7 +36,7 @@ test.describe('Makan Malam flow verification', () => {
     // Item 1: Nasi Goreng, 25000, assign Andi and Budi
     const item1 = page
       .locator('form')
-      .locator('div.bg-white.border.border-gray-100')
+      .locator('div.bg-white.border.border-slate-100')
       .first();
     await item1.getByPlaceholder('Nama item').fill('Nasi Goreng');
     await item1.locator('input[inputmode="numeric"]').first().fill('25000');
@@ -48,7 +48,7 @@ test.describe('Makan Malam flow verification', () => {
     await page.waitForTimeout(100);
     const item2 = page
       .locator('form')
-      .locator('div.bg-white.border.border-gray-100')
+      .locator('div.bg-white.border.border-slate-100')
       .nth(1);
     await item2.getByPlaceholder('Nama item').fill('Es Teh');
     await item2.locator('input[inputmode="numeric"]').first().fill('8000');
@@ -95,7 +95,9 @@ test.describe('Makan Malam flow verification', () => {
     // a. Ringkasan / Subtotal - scroll to reveal
     await page.evaluate(() => window.scrollTo(0, 200));
     await page.waitForTimeout(200);
-    const hasRingkasan = await page.getByText(/Ringkasan|Subtotal/).first().isVisible().catch(() => false);
+    await expect(
+      page.getByText(/Ringkasan|Subtotal/).first(),
+    ).toBeVisible();
 
     // b. Person cards - Andi and Budi visible
     await page.evaluate(() => window.scrollTo(0, 400));

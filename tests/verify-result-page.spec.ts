@@ -39,7 +39,7 @@ test.describe('Result page verification', () => {
       const item = items[i];
       if (i > 0) await page.getByRole('button', { name: 'Tambah Item Baru' }).click();
       await page.waitForTimeout(100);
-      const card = page.locator('form').locator('div.bg-white.border.border-gray-100').nth(i);
+      const card = page.locator('form').locator('div.bg-white.border.border-slate-100').nth(i);
       await card.getByPlaceholder('Nama item').fill(item.name);
       await card.locator('input[inputmode="numeric"]').first().fill(item.price);
       for (const init of item.assign) {
