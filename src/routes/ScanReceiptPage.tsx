@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ArrowLeft, Camera, Image, X, Zap, ArrowRight } from 'lucide-react';
+import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
+import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
+import Camera from 'lucide-react/dist/esm/icons/camera';
+import Image from 'lucide-react/dist/esm/icons/image';
+import X from 'lucide-react/dist/esm/icons/x';
+import Zap from 'lucide-react/dist/esm/icons/zap';
 import { cn } from '@/lib/utils';
 
 type ScanState = 'scan' | 'loading' | 'error';

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 
@@ -40,7 +40,7 @@ test.describe('Test Receipt flow - port 5175', () => {
     // Item 1: Kopi, 15000, assign both Andi and Budi
     const item1 = page
       .locator('form')
-      .locator('div.bg-white.border.border-gray-100')
+      .locator('div.bg-white.border.border-slate-100')
       .first();
     await item1.getByPlaceholder('Nama item').fill('Kopi');
     await item1.locator('input[inputmode="numeric"]').first().fill('15000');
