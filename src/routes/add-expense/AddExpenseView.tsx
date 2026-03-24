@@ -109,7 +109,7 @@ export function AddExpenseView() {
         required: { value: true, message: ERROR_MESSAGE_REQUIRED },
        })}
        placeholder="contoh: Starbucks, Makan Siang"
-       className="pl-10 bg-white border-0 rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] font-semibold text-base py-3.5 h-auto placeholder:text-slate-300 placeholder:font-semibold"
+       className="h-12 min-h-12 pl-10 bg-white border-0 rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] font-semibold text-base py-0 placeholder:text-slate-300 placeholder:font-semibold"
       />
      </div>
      {errors.title?.message ? (
@@ -132,8 +132,8 @@ export function AddExpenseView() {
          hasReceiverError ? 'border-red-300' : 'border-slate-100',
         )}
        >
-        <div className="flex gap-3 items-start">
-         <div className="flex-1 self-start flex flex-col gap-1 min-w-0">
+        <div className="flex gap-3 items-center">
+         <div className="flex-1 flex flex-col gap-1 min-w-0">
           <Input
            {...register(`expense.items.${itemIndex}.title`, {
             required: {
@@ -142,7 +142,7 @@ export function AddExpenseView() {
             },
            })}
            placeholder="Nama item"
-           className="border-0 p-0 font-bold text-base h-auto shadow-none focus-visible:ring-0 placeholder:text-slate-300"
+           className="h-12 min-h-12 border-0 px-0.5 py-0 font-bold text-base shadow-none focus-visible:ring-0 placeholder:text-slate-300"
           />
           {itemErrors?.title?.message ? (
            <ErrorMessageForm
@@ -176,7 +176,7 @@ export function AddExpenseView() {
                onChange(unformatThousandSeparator(e.target.value))
               }
               onFocus={(e) => e.target.select()}
-              className="pl-7 bg-slate-50 rounded-xl border-0 text-right font-bold text-sm py-1.5 h-auto shadow-none focus-visible:ring-1"
+              className="h-12 min-h-12 pl-7 bg-slate-50 rounded-xl border-0 text-right font-bold text-sm py-0 shadow-none focus-visible:ring-1"
              />
             )}
            />
@@ -271,7 +271,7 @@ export function AddExpenseView() {
           value={formatThousandSeparator(value ?? '')}
           onChange={(e) => onChange(unformatThousandSeparator(e.target.value))}
           onFocus={(e) => e.target.select()}
-          className="pl-7 bg-slate-50 rounded-lg border-0 text-right font-bold text-sm py-1 h-auto shadow-none focus-visible:ring-1"
+          className="h-12 min-h-12 pl-7 bg-slate-50 rounded-lg border-0 text-right font-bold text-sm py-0 shadow-none focus-visible:ring-1"
          />
         )}
        />
@@ -300,7 +300,7 @@ export function AddExpenseView() {
           value={formatThousandSeparator(value ?? '')}
           onChange={(e) => onChange(unformatThousandSeparator(e.target.value))}
           onFocus={(e) => e.target.select()}
-          className="pl-7 bg-slate-50 rounded-lg border-0 text-right font-bold text-sm py-1 h-auto shadow-none focus-visible:ring-1"
+          className="h-12 min-h-12 pl-7 bg-slate-50 rounded-lg border-0 text-right font-bold text-sm py-0 shadow-none focus-visible:ring-1"
          />
         )}
        />
@@ -329,7 +329,7 @@ export function AddExpenseView() {
           value={formatThousandSeparator(value ?? '')}
           onChange={(e) => onChange(unformatThousandSeparator(e.target.value))}
           onFocus={(e) => e.target.select()}
-          className="pl-7 bg-slate-50 rounded-lg border-0 text-right font-bold text-sm py-1 h-auto shadow-none focus-visible:ring-1"
+          className="h-12 min-h-12 pl-7 bg-slate-50 rounded-lg border-0 text-right font-bold text-sm py-0 shadow-none focus-visible:ring-1"
          />
         )}
        />
