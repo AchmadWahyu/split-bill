@@ -23,9 +23,9 @@ export function formatShareText(
       `👤 ${person.name} (${person.itemCount} item) — ${formatCurrencyIDR(person.total)}`
     );
 
-    person.items.forEach((item) => {
+    person.items.forEach((item, index) => {
       lines.push(
-        `  • ${item.title}: ${formatCurrencyIDR(item.pricePerPerson)}`
+        `  ${index + 1}. ${item.title}: ${formatCurrencyIDR(item.pricePerPerson)}`
       );
     });
 
