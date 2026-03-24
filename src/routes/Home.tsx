@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router';
 import { EventType } from '@/types';
 import Plus from 'lucide-react/dist/esm/icons/plus';
+import Camera from 'lucide-react/dist/esm/icons/camera';
 import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
 import Users from 'lucide-react/dist/esm/icons/users';
 import { Button } from '@/components/ui/button';
@@ -125,8 +126,15 @@ const Home = ({
           💬 Punya ide supaya Split Bareng lebih gampang dipakai?
         </button> */}
       </div>
+      
+      {/* FAB Scan Receipt */}
+      <Link to={url} className="fixed bottom-28 right-8 z-10 max-w-lg">
+        <div className="flex size-12 items-center justify-center rounded-full border border-slate-100 bg-white shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer">
+          <Camera className="size-5 text-green-600" strokeWidth={2.5} />
+        </div>
+      </Link>
 
-      {/* FAB */}
+      {/* FAB Add Expense Manual */}
       <Link to={url} className="fixed bottom-8 right-6 z-10 max-w-lg">
         <div className="size-16 rounded-full bg-[#13ec5b] flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] hover:brightness-95 transition-all cursor-pointer">
           <Plus className="size-5 text-slate-900" strokeWidth={2.5} />
