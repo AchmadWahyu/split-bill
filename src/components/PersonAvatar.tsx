@@ -48,7 +48,7 @@ export function PersonAvatar({
   const initials = getInitials(name);
 
   const sizeClasses = {
-    sm: 'size-8 text-[10px]',
+    sm: 'size-9 text-[10px]',
     md: 'size-12 text-sm',
     lg: 'size-14 text-base',
   };
