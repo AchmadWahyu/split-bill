@@ -201,7 +201,7 @@ export function AddExpenseView() {
         </div>
 
         {state.personList.length > 0 ? (
-         <div className="flex items-center gap-1.5 flex-wrap">
+         <div className="flex items-center gap-2 flex-wrap">
           {state.personList.map((name, personIndex) => {
            const isAssigned = watchedReceivers.includes(name);
            return (
