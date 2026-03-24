@@ -123,15 +123,20 @@ export function AddExpenseProvider({
 
   const toggleReceiver = useCallback(
     (itemIndex: number, personName: string) => {
-      const currentReceivers = getValues(`expense.items.${itemIndex}.receiver`);
+      const currentReceivers =
+        getValues(`expense.items.${itemIndex}.receiver`) ?? [];
       if (currentReceivers.includes(personName)) {
         const updated = currentReceivers.filter((r) => r !== personName);
-        setValue(`expense.items.${itemIndex}.receiver`, updated);
+        setValue(`expense.items.${itemIndex}.receiver`, updated, {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
       } else {
-        setValue(`expense.items.${itemIndex}.receiver`, [
-          ...currentReceivers,
-          personName,
-        ]);
+        setValue(
+          `expense.items.${itemIndex}.receiver`,
+          [...currentReceivers, personName],
+          { shouldDirty: true, shouldTouch: true },
+        );
         clearErrors(`expense.items.${itemIndex}.receiver`);
       }
     },
@@ -210,7 +215,6 @@ export function AddExpenseProvider({
       meta: {
         register,
         control,
-        watch,
         errors,
         fields,
         handleFormSubmit: handleSubmit(onSubmit),
@@ -232,7 +236,6 @@ export function AddExpenseProvider({
       onSubmit,
       register,
       control,
-      watch,
       errors,
       fields,
     ],

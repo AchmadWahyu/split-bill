@@ -4,7 +4,6 @@ import type {
   FieldArrayWithId,
   FieldErrors,
   UseFormRegister,
-  UseFormWatch,
 } from 'react-hook-form';
 import type { AddExpenseFormValues } from './types';
 
@@ -40,7 +39,6 @@ export type AddExpenseContextValue = {
   meta: {
     register: UseFormRegister<AddExpenseFormValues>;
     control: Control<AddExpenseFormValues>;
-    watch: UseFormWatch<AddExpenseFormValues>;
     errors: FieldErrors<AddExpenseFormValues>;
     fields: FieldArrayWithId<AddExpenseFormValues, 'expense.items', 'id'>[];
     /** Bound react-hook-form submit handler (validation + onSubmit) */
