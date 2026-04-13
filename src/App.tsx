@@ -79,7 +79,7 @@ function App() {
             />
           }
         />
-        <Route path=":eventId/scan" element={<ScanReceiptPage />} />
+        <Route path=":eventId/scan" element={<ScanReceiptPage handleUpdateEventById={handleUpdateEventById} />} />
       </Route>
       </Routes>
     </>
