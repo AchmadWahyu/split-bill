@@ -2,6 +2,7 @@
 name = "split-bill"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-05-05"
+compatibility_flags = ["nodejs_compat"]
 
 [env.production.vars]
 # GEMINI_API_KEY is a secret — set via: wrangler pages secret put GEMINI_API_KEY

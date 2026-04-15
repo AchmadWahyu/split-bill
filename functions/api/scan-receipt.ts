@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import * as Sentry from '@sentry/cloudflare';
 
 interface Env {
  GEMINI_API_KEY: string;
@@ -75,6 +76,8 @@ const RECEIPT_RESPONSE_SCHEMA = {
 
 export const onRequestPost: PagesFunction<Env> = async (ctx) => {
  try {
+  Sentry.logger.info('Receipt scan started');
+
   const { image } = await ctx.request.json<{ image: string }>();
 
   const ai = new GoogleGenAI({ apiKey: ctx.env.GEMINI_API_KEY });
@@ -94,16 +97,28 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
 
   const textResponse = response.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!textResponse) {
+   Sentry.logger.warn('Gemini returned empty response', {
+    model: 'gemini-3.1-flash-lite-preview',
+    candidatesCount: response.candidates?.length ?? 0,
+   });
    return new Response(JSON.stringify({ error: 'No response from AI' }), {
     status: 500,
     headers: { 'Content-Type': 'application/json' },
    });
   }
 
+  Sentry.logger.info('Receipt scan completed successfully');
+
   return new Response(textResponse, {
    headers: { 'Content-Type': 'application/json' },
   });
  } catch (error) {
+  Sentry.captureException(error);
+  Sentry.logger.error('Receipt scan failed', {
+   errorMessage: error instanceof Error ? error.message : String(error),
+   errorType: error instanceof Error ? error.constructor.name : 'unknown',
+  });
+
   const message = error instanceof Error ? error.message : 'Internal server error';
   return new Response(JSON.stringify({ error: message }), {
    status: 500,

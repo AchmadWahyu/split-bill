@@ -20,6 +20,7 @@
     "@radix-ui/react-select": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.2",
     "@radix-ui/react-toggle": "^1.1.9",
+    "@sentry/cloudflare": "^10.48.0",
     "@sentry/react": "^9.19.0",
     "@sentry/vite-plugin": "^3.4.0",
     "@tailwindcss/vite": "^4.1.3",
