@@ -24,6 +24,9 @@ dist-ssr
 *.sw?
 .qodo
 
+# Wrangler local dev state
+.wrangler/
+
 # Sentry Config File
 .env.sentry-build-plugin
 
