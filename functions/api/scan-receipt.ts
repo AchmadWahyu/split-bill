@@ -74,32 +74,40 @@ const RECEIPT_RESPONSE_SCHEMA = {
 };
 
 export const onRequestPost: PagesFunction<Env> = async (ctx) => {
- const { image } = await ctx.request.json<{ image: string }>();
+ try {
+  const { image } = await ctx.request.json<{ image: string }>();
 
- const ai = new GoogleGenAI({ apiKey: ctx.env.GEMINI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: ctx.env.GEMINI_API_KEY });
 
- const response = await ai.models.generateContent({
-  model: 'gemini-3.1-flash-lite-preview',
-  contents: [
-   { inlineData: { mimeType: 'image/jpeg', data: image } },
-   { text: 'Extract the receipt data from this image.' },
-  ],
-  config: {
-   systemInstruction: RECEIPT_SYSTEM_INSTRUCTION,
-   responseMimeType: 'application/json',
-   responseJsonSchema: RECEIPT_RESPONSE_SCHEMA,
-  },
- });
+  const response = await ai.models.generateContent({
+   model: 'gemini-3.1-flash-lite-preview',
+   contents: [
+    { inlineData: { mimeType: 'image/jpeg', data: image } },
+    { text: 'Extract the receipt data from this image.' },
+   ],
+   config: {
+    systemInstruction: RECEIPT_SYSTEM_INSTRUCTION,
+    responseMimeType: 'application/json',
+    responseJsonSchema: RECEIPT_RESPONSE_SCHEMA,
+   },
+  });
 
- const textResponse = response.candidates?.[0]?.content?.parts?.[0]?.text;
- if (!textResponse) {
-  return new Response(JSON.stringify({ error: 'No response from AI' }), {
+  const textResponse = response.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!textResponse) {
+   return new Response(JSON.stringify({ error: 'No response from AI' }), {
+    status: 500,
+    headers: { 'Content-Type': 'application/json' },
+   });
+  }
+
+  return new Response(textResponse, {
+   headers: { 'Content-Type': 'application/json' },
+  });
+ } catch (error) {
+  const message = error instanceof Error ? error.message : 'Internal server error';
+  return new Response(JSON.stringify({ error: message }), {
    status: 500,
    headers: { 'Content-Type': 'application/json' },
   });
  }
-
- return new Response(textResponse, {
-  headers: { 'Content-Type': 'application/json' },
- });
 };
