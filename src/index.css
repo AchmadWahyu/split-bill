@@ -84,3 +84,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes scan-line {
+  0%, 100% {
+    top: 5%;
+  }
+  50% {
+    top: 95%;
+  }
+}

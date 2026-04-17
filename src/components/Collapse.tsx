@@ -1,5 +1,5 @@
 import { memo, ReactNode, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
 import clsx from 'clsx';
 
 const Collapse = ({
