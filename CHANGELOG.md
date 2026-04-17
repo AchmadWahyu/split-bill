@@ -12,3 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplify user flow to be 1 page for event title, person list and items
 - Add copy to text and share to whatsapp on event result page
 - End-to-end tests with Playwright
+
+
+## [1.1.0] - 2026-04-17
+
+### Added
+- Upload or capture bill with camera
+- Integrate with google genai
+- Integrate with cloudflare functions

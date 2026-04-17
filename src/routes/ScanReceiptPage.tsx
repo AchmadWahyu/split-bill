@@ -16,7 +16,9 @@ type ScanReceiptPageProps = {
  handleUpdateEventById: (data: EventType) => void;
 };
 
-export default function ScanReceiptPage({ handleUpdateEventById }: ScanReceiptPageProps) {
+export default function ScanReceiptPage({
+ handleUpdateEventById,
+}: ScanReceiptPageProps) {
  const navigate = useNavigate();
  const { eventId } = useParams();
 
@@ -87,7 +89,7 @@ export default function ScanReceiptPage({ handleUpdateEventById }: ScanReceiptPa
    // before 1838
    // after using systemInstruction: 1689
    // after using responseJsonSchema & responseMimeType: 1533
-   const parsed = await response.json() as Omit<EventType, 'id'>;
+   const parsed = (await response.json()) as Omit<EventType, 'id'>;
    const eventData: EventType = {
     ...parsed,
     id: eventId ?? crypto.randomUUID(),
@@ -134,7 +136,12 @@ export default function ScanReceiptPage({ handleUpdateEventById }: ScanReceiptPa
     />
    )}
 
-   {state === 'loading' && <LoadingView onBack={() => navigate(-1)} />}
+   {state === 'loading' && (
+    <LoadingView
+     onBack={() => navigate(-1)}
+     {...(capturedImage && { imageUrl: capturedImage })}
+    />
+   )}
 
    {state === 'error' && (
     <ErrorView
