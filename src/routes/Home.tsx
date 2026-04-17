@@ -84,25 +84,19 @@ const Home = ({
                   <span className="text-lg font-medium text-slate-900 line-clamp-1">
                     {event.title}
                   </span>
-                  <span
-                    role="button"
+                  <button
+                    aria-label="Hapus acara"
+                    type="button"
                     tabIndex={0}
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowDialog(true);
                       setSelectedEventId(event.id);
                     }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.stopPropagation();
-                        setShowDialog(true);
-                        setSelectedEventId(event.id);
-                      }
-                    }}
                     className="text-slate-300 hover:text-red-500 transition-colors cursor-pointer p-1"
                   >
                     <Trash2 className="size-4" />
-                  </span>
+                  </button>
                 </div>
 
                 {/* Stats row */}

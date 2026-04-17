@@ -40,6 +40,7 @@ export function EventResultView() {
         <div className="flex items-center justify-between px-4 py-4">
           <button
             type="button"
+            aria-label="Kembali ke home"
             onClick={actions.navigateHome}
             className="size-10 rounded-full flex items-center justify-center cursor-pointer"
           >
@@ -52,6 +53,7 @@ export function EventResultView() {
           </div>
           <button
             type="button"
+            aria-label="Edit acara"
             onClick={actions.navigateEdit}
             className="size-10 rounded-full flex items-center justify-center cursor-pointer"
           >
@@ -276,6 +278,7 @@ export function EventResultView() {
       <div className="px-4 pb-3 flex gap-3">
         <button
           type="button"
+          aria-label="Salin semua"
           onClick={actions.copyShare}
           className="flex-1 h-12 rounded-xl border border-slate-200 font-semibold text-slate-900 cursor-pointer hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
         >
@@ -284,6 +287,7 @@ export function EventResultView() {
         </button>
         <button
           type="button"
+          aria-label="Bagikan via WhatsApp"
           onClick={actions.shareWhatsApp}
           className="flex-1 h-12 rounded-xl bg-[#13ec5b] font-semibold text-slate-900 cursor-pointer shadow-[0px_10px_15px_-3px_rgba(19,236,91,0.2),0px_4px_6px_-4px_rgba(19,236,91,0.2)] hover:brightness-95 transition-all flex items-center justify-center gap-2"
         >
@@ -295,11 +299,12 @@ export function EventResultView() {
       <div className="px-4 pb-8">
         <button
           type="button"
+          aria-label="Kembali ke home"
           onClick={actions.navigateHome}
           className="w-full h-12 font-semibold text-slate-500 cursor-pointer hover:text-slate-700 transition-colors flex items-center justify-center gap-2"
         >
           <HomeIcon className="size-4" />
-          Kembali ke Beranda
+          Kembali ke Home
         </button>
       </div>
     </main>
