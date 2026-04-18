@@ -72,7 +72,11 @@ export default function ScanReceiptPage({
  const handleSubmitImageString = async (capturedImage: string) => {
   setState('loading');
 
-  const image = capturedImage.split(',')[1];
+  const [, image] = capturedImage.split(',');
+  if (!image) {
+   setState('error');
+   return;
+  }
 
   try {
    const response = await fetch('/api/scan-receipt', {
