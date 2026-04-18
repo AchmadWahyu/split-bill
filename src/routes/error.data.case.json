@@ -1,0 +1,92 @@
+[
+ {
+  "id": "",
+  "title": "",
+  "personList": [],
+  "expense": {
+   "items": [
+    {
+     "title": "",
+     "price": "0",
+     "receiver": []
+    }
+   ],
+   "tax": {
+    "value": "0",
+    "type": "AMOUNT"
+   },
+   "discount": {
+    "value": "0",
+    "type": "AMOUNT"
+   },
+   "serviceCharge": {
+    "value": "0",
+    "type": "AMOUNT"
+   }
+  }
+ },
+ {
+  "title": "Dcika Cakes & Bakery",
+  "personList": [
+   {
+    "expense": {
+     "items": [
+      {
+       "title": "Belgian Choco 16cm",
+       "price": "145000",
+       "receiver": []
+      },
+      {
+       "title": "Roll Blackforest",
+       "price": "50000",
+       "receiver": []
+      },
+      {
+       "title": "Butter Kenari",
+       "price": "60000",
+       "receiver": []
+      },
+      {
+       "title": "Vulcano Coklat",
+       "price": "12000",
+       "receiver": []
+      },
+      {
+       "title": "Roti New Tiramisu",
+       "price": "12000",
+       "receiver": []
+      },
+      {
+       "title": "Pizza Pedas",
+       "price": "13500",
+       "receiver": []
+      },
+      {
+       "title": "Dcool",
+       "price": "30000",
+       "receiver": []
+      },
+      {
+       "title": "Sponbond Besar",
+       "price": "4000",
+       "receiver": []
+      }
+     ],
+     "tax": {
+      "value": "9008",
+      "type": "AMOUNT"
+     },
+     "discount": {
+      "value": "130600",
+      "type": "AMOUNT"
+     },
+     "serviceCharge": {
+      "value": "0",
+      "type": "AMOUNT"
+     }
+    }
+   }
+  ],
+  "id": "6697d6b7-90a0-41dc-9477-e505a1c7183b"
+ }
+]

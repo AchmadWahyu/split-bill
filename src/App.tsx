@@ -7,6 +7,7 @@ import ScanReceiptPage from './routes/ScanReceiptPage';
 import { useState } from 'react';
 import { EventType } from './types';
 import { normalizeEventListData } from './utils/normalizer';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
   const eventListValueFromLocalStorage = localStorage.getItem('eventList');
@@ -46,7 +47,9 @@ function App() {
   };
 
   return (
-    <Routes>
+    <>
+      <Toaster />
+      <Routes>
       <Route
         path="/"
         element={
@@ -76,9 +79,10 @@ function App() {
             />
           }
         />
-        <Route path=":eventId/scan" element={<ScanReceiptPage />} />
+        <Route path=":eventId/scan" element={<ScanReceiptPage handleUpdateEventById={handleUpdateEventById} />} />
       </Route>
-    </Routes>
+      </Routes>
+    </>
   );
 }
 
