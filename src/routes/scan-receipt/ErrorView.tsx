@@ -17,6 +17,7 @@ export function ErrorView({
       <header className="flex items-center p-4">
         <button
           type="button"
+          aria-label="Kembali ke scan struk"
           onClick={onBack}
           className="size-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors"
         >
@@ -46,6 +47,7 @@ export function ErrorView({
         <div className="w-full max-w-sm space-y-4">
           <button
             type="button"
+            aria-label="Coba lagi"
             onClick={onRetry}
             className="w-full bg-[#13ec5b] hover:bg-[#13ec5b]/90 text-slate-900 font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 transition-all shadow-md active:scale-[0.98] cursor-pointer"
           >
@@ -54,6 +56,7 @@ export function ErrorView({
           </button>
           <button
             type="button"
+            aria-label="Input manual"
             onClick={onManualInput}
             className="w-full flex items-center justify-center gap-2 py-3 text-slate-600 font-medium hover:text-green-600 transition-colors cursor-pointer"
           >

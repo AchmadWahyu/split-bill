@@ -128,14 +128,14 @@ const Home = ({
       </div>
       
       {/* FAB Scan Receipt */}
-      <Link to={`${url}/scan`} className="fixed bottom-28 right-8 z-10 max-w-lg">
+      <Link to={`${url}/scan`} className="fixed bottom-28 right-8 z-10 max-w-lg" aria-label="Scan struk baru">
         <div className="flex size-12 items-center justify-center rounded-full border border-slate-100 bg-white shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer">
           <Camera className="size-5 text-green-600" strokeWidth={2.5} />
         </div>
       </Link>
 
       {/* FAB Add Expense Manual */}
-      <Link to={`${url}/edit`} className="fixed bottom-8 right-6 z-10 max-w-lg">
+      <Link to={`${url}/edit`} className="fixed bottom-8 right-6 z-10 max-w-lg" aria-label="Tambah acara manual">
         <div className="size-16 rounded-full bg-[#13ec5b] flex items-center justify-center shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] hover:brightness-95 transition-all cursor-pointer">
           <Plus className="size-5 text-slate-900" strokeWidth={2.5} />
         </div>

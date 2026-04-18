@@ -39,6 +39,7 @@ export function ScanOverlay({
       <header className="flex items-center p-4 z-20 bg-[#f6f8f6]">
         <button
           type="button"
+          aria-label="Kembali ke home"
           onClick={onBack}
           className="size-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors"
         >
@@ -81,6 +82,7 @@ export function ScanOverlay({
           {/* Gallery */}
           <button
             type="button"
+            aria-label="Pilih foto dari galeri"
             onClick={() => fileInputRef.current?.click()}
             className="flex shrink-0 items-center justify-center rounded-full size-12 bg-slate-200 text-slate-900 border border-slate-300 cursor-pointer hover:bg-slate-300 transition-colors"
           >
@@ -91,6 +93,7 @@ export function ScanOverlay({
           <div className="relative flex items-center justify-center size-24">
             <button
               type="button"
+              aria-label="Ambil foto"
               onClick={onCapture}
               className="flex shrink-0 items-center justify-center rounded-full size-20 bg-[#13ec5b] text-slate-900 shadow-lg shadow-[#13ec5b]/20 hover:scale-95 active:scale-90 transition-transform cursor-pointer"
             >
@@ -102,6 +105,7 @@ export function ScanOverlay({
           {/* Flash */}
           <button
             type="button"
+            aria-label="Nyalakan/matikan flash"
             onClick={() => onFlash(!flashOn)}
             className={cn(
               'flex shrink-0 items-center justify-center rounded-full size-12 border cursor-pointer transition-colors',

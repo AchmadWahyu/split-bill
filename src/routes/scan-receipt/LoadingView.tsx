@@ -54,6 +54,7 @@ export function LoadingView({ onBack, imageUrl }: LoadingViewProps) {
       <header className="flex items-center p-4 pb-2 justify-between border-b border-slate-100">
         <button
           type="button"
+          aria-label="Kembali ke scan struk"
           onClick={onBack}
           className="size-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors"
         >

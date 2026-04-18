@@ -20,6 +20,7 @@ export function ConfirmView({
         <button
           type="button"
           onClick={onBack}
+          aria-label="Konfirmasi foto"
           className="size-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors"
         >
           <ArrowLeft className="size-5 text-slate-900" />
@@ -53,6 +54,7 @@ export function ConfirmView({
         <div className="mt-8 flex flex-col gap-4">
           <button
             type="button"
+            aria-label="Pakai foto ini"
             onClick={onConfirm}
             className="w-full h-16 rounded-full bg-[#13ec5b] text-slate-900 font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-[#13ec5b]/20 hover:bg-[#13ec5b]/90 active:scale-95 transition-all cursor-pointer"
           >
@@ -61,6 +63,7 @@ export function ConfirmView({
           </button>
           <button
             type="button"
+            aria-label="Foto ulang"
             onClick={onRetry}
             className="w-full h-14 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold text-base transition-colors active:scale-95 cursor-pointer"
           >
