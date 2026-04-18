@@ -4,6 +4,7 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
+  // expected to exclude because already has its own tsconfig on functions folder (./functions/tsconfig.json)
   "exclude": ["functions/**/*"],
   "compilerOptions": {
     "baseUrl": ".",
