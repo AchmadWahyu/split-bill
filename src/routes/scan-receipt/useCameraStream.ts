@@ -21,23 +21,53 @@ export function useCameraStream() {
         return;
       }
 
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-
-      if (!videoElement) return;
-
-      videoElement.srcObject = localStream;
-
       try {
-        await videoElement.play();
-        setStream(localStream);
+        try {
+          localStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' },
+          });
+        } catch (err) {
+          // Rear camera not available — fall back to any camera
+          if (err instanceof DOMException && err.name === 'OverconstrainedError') {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          } else {
+            throw err;
+          }
+        }
 
+        if (!videoElement) return;
+        videoElement.srcObject = localStream;
+
+        try {
+          await videoElement.play();
+        } catch (err) {
+          if (err instanceof DOMException && err.name === 'AbortError') return;
+          throw err;
+        }
+
+        setStream(localStream);
         const h = videoElement.videoHeight / (videoElement.videoWidth / IMG_WIDTH);
         setDimensions({ width: IMG_WIDTH, height: h });
       } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') return;
-        console.error('Error playing video:', error);
+        const name = error instanceof DOMException ? error.name : '';
+        if (name === 'NotAllowedError') {
+          toast.error('Akses kamera ditolak', {
+            description: 'Izinkan akses kamera di pengaturan browser, lalu coba lagi ya.',
+          });
+        } else if (name === 'NotFoundError') {
+          toast.error('Kamera nggak ketemu', {
+            description: 'Nggak ada kamera yang terdeteksi di perangkat ini.',
+          });
+        } else if (name === 'NotReadableError') {
+          toast.error('Kamera nggak bisa dipakai', {
+            description: 'Kamera mungkin lagi dipakai aplikasi lain.',
+          });
+        } else {
+          toast.error('Ada masalah di kamera', {
+            description: 'Kamera nggak bisa dinyalakan. Coba lagi sebentar ya.',
+          });
+          console.error('Camera error:', error);
+        }
       }
     }
 
