@@ -119,10 +119,9 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
    errorType: error instanceof Error ? error.constructor.name : 'unknown',
   });
 
-  const message = error instanceof Error ? error.message : 'Internal server error';
-  return new Response(JSON.stringify({ error: message }), {
-   status: 500,
-   headers: { 'Content-Type': 'application/json' },
-  });
+  return new Response(JSON.stringify({ error: 'Failed to process receipt' }), {
+    status: 500,
+    headers: { 'Content-Type': 'application/json' },
+   });
  }
 };
