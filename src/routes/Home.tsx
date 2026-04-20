@@ -118,13 +118,13 @@ const Home = ({
         </div>
 
         {/* Feedback link */}
-        {/* <button
+        <button
           type="button"
           onClick={() => navigate('/feedback')}
           className="text-sm text-slate-400 cursor-pointer hover:text-slate-600 transition-colors py-4"
         >
           💬 Punya ide supaya Split Bareng lebih gampang dipakai?
-        </button> */}
+        </button>
       </div>
       
       {/* FAB Scan Receipt */}
