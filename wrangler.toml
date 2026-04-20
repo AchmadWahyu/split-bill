@@ -6,5 +6,8 @@ compatibility_flags = ["nodejs_compat"]
 
 [env.production.vars]
 NODE_ENV = "production"
-# GEMINI_API_KEY is a secret — set via: wrangler pages secret put GEMINI_API_KEY
-# For local dev, add GEMINI_API_KEY=your_key to a .dev.vars file (git-ignored)
+# Secrets (not committed): wrangler pages secret put GEMINI_API_KEY | wrangler pages secret put MISTRAL_API_KEY
+# Local Functions + API routes: create .dev.vars in this directory (git-ignored) with:
+#   GEMINI_API_KEY=...
+#   MISTRAL_API_KEY=...
+# Then run `npx wrangler pages dev` (serves the built app and /api/*). Plain `npm run dev` does not run Cloudflare Functions.

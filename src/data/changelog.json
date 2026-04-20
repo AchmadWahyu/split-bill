@@ -20,5 +20,12 @@
   "items": [
    "Sekarang kamu bisa kirim masukan, laporan bug, atau ide fitur langsung lewat halaman Feedback"
   ]
+ },
+ {
+  "version": "1.3.0",
+  "date": "2026-04-20",
+  "items": [
+   "Menambahkan jalur cadangan otomatis jika proses scan membutuhkan waktu lebih lama"
+  ]
  }
 ]
