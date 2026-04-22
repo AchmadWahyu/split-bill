@@ -102,6 +102,20 @@ function parseReceiptJsonString(jsonText: string): string | null {
 
 const GEMINI_GENERATE_TIMEOUT_MS = 16_000;
 
+type GeminiError = {
+	error: {
+		code: string;
+		message: string;
+		status: string;
+	}
+}
+
+const parseGeminiError = (error: unknown): string => {
+	if (error instanceof Error) return (error.message as unknown as GeminiError).error.code;
+	if (typeof error === 'string') return error;
+	return String(error);
+};
+
 async function scanWithGemini(env: Env, imageBase64: string): Promise<string | null> {
 	const controller = new AbortController();
 	const abortTimer = setTimeout(() => controller.abort(), GEMINI_GENERATE_TIMEOUT_MS);
@@ -175,12 +189,7 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
 			result = await scanWithGemini(ctx.env, image);
 			if (result) provider = 'gemini';
 		} catch (geminiError) {
-			console.error('Gemini scan failed, falling back to Mistral OCR', {
-				errorMessage: geminiError instanceof Error ? geminiError.message : String(geminiError),
-			});
-			Sentry.logger.warn('Gemini scan failed, falling back to Mistral OCR', {
-				errorMessage: geminiError instanceof Error ? geminiError.message : String(geminiError),
-			});
+			Sentry.logger.warn('Gemini scan failed, falling back to Mistral OCR, error: ' + parseGeminiError(geminiError));
 		}
 
 		if (!result) {
@@ -189,9 +198,6 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
 				if (result) provider = 'mistral';
 			} catch (mistralError) {
 				Sentry.captureException(mistralError);
-				console.error('Mistral OCR fallback failed', {
-					errorMessage: mistralError instanceof Error ? mistralError.message : String(mistralError),
-				});
 				Sentry.logger.error('Mistral OCR fallback failed', {
 					errorMessage: mistralError instanceof Error ? mistralError.message : String(mistralError),
 				});
@@ -205,9 +211,7 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
 			});
 		}
 
-		Sentry.logger.info('Receipt scan completed successfully', {
-			provider: provider ?? 'unknown',
-		});
+		Sentry.logger.info(`Receipt scan completed successfully, provider: ${provider}`);
 
 		return new Response(result, {
 			headers: { 'Content-Type': 'application/json' },
