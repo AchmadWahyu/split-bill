@@ -8,7 +8,7 @@ interface Env {
 }
 
 const MISTRAL_OCR_MODEL = 'mistral-ocr-2512';
-const GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
+const GEMINI_MODEL = 'gemini-3.1-flash-lite';
 
 const RECEIPT_SYSTEM_INSTRUCTION = `You are a receipt data extraction assistant. Extract all data from the receipt image.
 - personList and each item's receiver are always empty arrays.
