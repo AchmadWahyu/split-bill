@@ -1,9 +1,17 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useWatch } from 'react-hook-form';
+import { useLocation } from 'react-router';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
 import Plus from 'lucide-react/dist/esm/icons/plus';
 import Store from 'lucide-react/dist/esm/icons/store';
 import X from 'lucide-react/dist/esm/icons/x';
 import { cn } from '@/lib/utils';
+import {
+  isAddMemberCoachmarkSuppressed,
+  suppressAddMemberCoachmark,
+} from '@/utils/addMemberCoachmark';
 import {
  formatCurrencyIDR,
  formatThousandSeparator,
@@ -24,8 +32,93 @@ export function AddExpenseView() {
  const { state, actions, meta } = useAddExpense();
  const { register, control, errors, fields } = meta;
 
- /** Subscribes this component to item rows (including `receiver`) so chips re-render when toggling. Passing `watch` from context does not reliably subscribe here. */
- const watchedItems = useWatch({ control, name: 'expense.items' });
+/** Subscribes this component to item rows (including `receiver`) so chips re-render when toggling. Passing `watch` from context does not reliably subscribe here. */
+  const watchedItems = useWatch({ control, name: 'expense.items' });
+
+  const addMemberButtonRef = useRef<HTMLButtonElement>(null);
+  const location = useLocation();
+  const isFromScan = Boolean(
+    (location.state as { fromScan?: boolean } | null)?.fromScan,
+  );
+  const [coachmarkDismissed, setCoachmarkDismissed] = useState(false);
+  const showAddMemberCoachmark =
+    isFromScan &&
+    state.personList.length === 0 &&
+    !coachmarkDismissed &&
+    !isAddMemberCoachmarkSuppressed();
+
+  const dismissAddMemberCoachmark = useCallback(() => {
+    suppressAddMemberCoachmark();
+    setCoachmarkDismissed(true);
+  }, []);
+
+  const handleOpenAddPersonDialog = () => {
+    if (showAddMemberCoachmark) dismissAddMemberCoachmark();
+    actions.openAddPersonDialog();
+  };
+
+  useEffect(() => {
+    if (!showAddMemberCoachmark || !addMemberButtonRef.current) return;
+
+    const driverRef: { current: ReturnType<typeof driver> | null } = {
+      current: null,
+    };
+
+    driverRef.current = driver({
+      animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      duration: 300,
+      overlayColor: '#0f172a',
+      overlayOpacity: 0.55,
+      stagePadding: 6,
+      stageRadius: 9999,
+      popoverClass: 'coachmark-add-member-popover',
+      allowKeyboardControl: false,
+      overlayClickBehavior: () => {
+        dismissAddMemberCoachmark();
+        driverRef.current?.destroy();
+      },
+      onCloseClick: () => {
+        dismissAddMemberCoachmark();
+        driverRef.current?.destroy();
+      },
+      onPopoverRender: (popover) => {
+        const doneButton = document.createElement('button');
+        doneButton.type = 'button';
+        doneButton.className =
+          'driver-popover-footer-btn coachmark-add-member-done';
+        doneButton.innerText = 'Oke, paham';
+        doneButton.addEventListener('click', () => {
+          dismissAddMemberCoachmark();
+          driverRef.current?.destroy();
+        });
+        popover.footerButtons.appendChild(doneButton);
+      },
+    });
+
+    driverRef.current.highlight({
+      element: addMemberButtonRef.current,
+      popover: {
+        title: 'Pilih anggota',
+        description: 'Tambah anggota yang ikut patungan disini ya',
+        side: 'left',
+        align: 'center',
+        showButtons: ['close'],
+      },
+    });
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && driverRef.current?.isActive()) {
+        dismissAddMemberCoachmark();
+        driverRef.current?.destroy();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown, true);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown, true);
+      if (driverRef.current?.isActive()) driverRef.current.destroy();
+    };
+  }, [showAddMemberCoachmark, dismissAddMemberCoachmark]);
 
  return (
   <main className="bg-[#f6f8f6] min-h-dvh flex flex-col">
@@ -74,8 +167,9 @@ export function AddExpenseView() {
 
       <div className="shrink-0 flex flex-col gap-1 items-center self-stretch justify-center pl-3 border-l border-slate-200/90 bg-[rgba(246,248,246,0.98)] shadow-[-8px_0_12px_-8px_rgba(0,0,0,0.08)]">
        <button
+        ref={addMemberButtonRef}
         type="button"
-        onClick={actions.openAddPersonDialog}
+        onClick={handleOpenAddPersonDialog}
         className="size-12 rounded-full border-2 border-dashed border-slate-300 bg-white flex items-center justify-center cursor-pointer hover:border-slate-400 transition-colors"
        >
         <Plus className="size-3.5 text-slate-400" />

@@ -7,10 +7,15 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 // https://vite.dev/config/
+const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
+
 export default defineConfig({
   plugins: [react(), tailwindcss(), nodePolyfills(), sentryVitePlugin({
     org: "achwahyu",
-    project: "split-bill"
+    project: "split-bill",
+    authToken: sentryAuthToken,
+    disable: !sentryAuthToken,
+    telemetry: false,
   })],
 
   resolve: {

@@ -13,6 +13,7 @@ Patungan jadi gampang, cepet, dan adil — a small Vite + React app for splittin
 | Command | Description |
 | -------- | ----------- |
 | `npm run dev` | Start the Vite dev server (default port 5173) |
+| `npm run dev:wrangler` | Build and start local Cloudflare Pages dev server with Functions (serves `/api/*`) |
 | `npm run build` | Typecheck and production build |
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run ESLint |
@@ -32,6 +33,31 @@ To debug a single file:
 ```bash
 npx playwright test tests/verify-makan-malam-flow.spec.ts
 ```
+
+## Local development with Cloudflare Functions (BFF)
+
+The `/api/*` routes are Cloudflare Pages Functions, not Vite endpoints. Plain `npm run dev` only starts the Vite dev server, so calls to `/api/scan-receipt` will return 404.
+
+To run the app + Functions locally:
+
+1. Make sure `.dev.vars` exists in the project root and contains your keys:
+
+   ```env
+   GEMINI_API_KEY=...
+   MISTRAL_API_KEY=...
+   ```
+
+2. Run the wrangler dev command:
+
+   ```bash
+   npm run dev:wrangler
+   ```
+
+   This builds the app and starts `wrangler pages dev`, which serves the static build and the Functions.
+
+3. Open the URL shown by wrangler (default `http://localhost:8788`) and test the receipt scan flow.
+
+> The Vite dev server on port 5173 is **not** used by `dev:wrangler`. If you need hot-reload while editing React code, run `npm run dev` in one terminal and `npx wrangler pages dev` in another, then proxy `/api/*` from Vite to wrangler.
 
 ## Project layout (high level)
 

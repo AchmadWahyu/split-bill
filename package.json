@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:wrangler": "npm run build && wrangler pages dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -28,6 +29,7 @@
     "@types/w3c-image-capture": "^1.0.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "driver.js": "^1.8.0",
     "fast-deep-equal": "^3.1.3",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.488.0",

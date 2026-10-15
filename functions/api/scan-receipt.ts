@@ -111,10 +111,14 @@ type GeminiError = {
 }
 
 const parseGeminiError = (error: unknown): string => {
+	console.log("AAAA error is", error);
 	if (error instanceof Error) return (error.message as unknown as GeminiError).error.code;
 	if (typeof error === 'string') return error;
 	return String(error);
 };
+
+const getElapsedSeconds = (startedAt: number): string =>
+	`${((performance.now() - startedAt) / 1000).toFixed(2)}s`;
 
 async function scanWithGemini(env: Env, imageBase64: string): Promise<string | null> {
 	const controller = new AbortController();
@@ -184,21 +188,43 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
 
 		let result: string | null = null;
 		let provider: 'mistral' | 'gemini' | null = null;
+		const geminiStartedAt = performance.now();
+		let geminiDurationSeconds = '';
 
 		try {
 			result = await scanWithGemini(ctx.env, image);
+			geminiDurationSeconds = getElapsedSeconds(geminiStartedAt);
+			Sentry.logger.info('Gemini scan finished', {
+				durationSeconds: geminiDurationSeconds,
+				succeeded: Boolean(result),
+			});
 			if (result) provider = 'gemini';
 		} catch (geminiError) {
+			geminiDurationSeconds = getElapsedSeconds(geminiStartedAt);
 			Sentry.logger.warn('Gemini scan failed, falling back to Mistral OCR, error: ' + parseGeminiError(geminiError));
+			console.warn('Gemini scan failed, falling back to Mistral OCR', geminiError);
+			Sentry.logger.warn('Gemini scan duration', {
+				durationSeconds: geminiDurationSeconds,
+			});
 		}
 
 		if (!result) {
+			const mistralStartedAt = performance.now();
+			let mistralDurationSeconds = '';
 			try {
 				result = await scanWithMistralOcr(ctx.env, image);
+				mistralDurationSeconds = getElapsedSeconds(mistralStartedAt);
+				Sentry.logger.info('Mistral OCR scan finished', {
+					durationSeconds: mistralDurationSeconds,
+					succeeded: Boolean(result),
+				});
 				if (result) provider = 'mistral';
 			} catch (mistralError) {
+				mistralDurationSeconds = getElapsedSeconds(mistralStartedAt);
 				Sentry.captureException(mistralError);
+				console.error('Mistral OCR fallback failed', mistralError);
 				Sentry.logger.error('Mistral OCR fallback failed', {
+					durationSeconds: mistralDurationSeconds,
 					errorMessage: mistralError instanceof Error ? mistralError.message : String(mistralError),
 				});
 			}
@@ -211,12 +237,14 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
 			});
 		}
 
+
 		Sentry.logger.info(`Receipt scan completed successfully, provider: ${provider}`);
 
 		return new Response(result, {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	} catch (error) {
+		console.error('Receipt scan failed', error);
 		Sentry.captureException(error);
 		Sentry.logger.error('Receipt scan failed', {
 			errorMessage: error instanceof Error ? error.message : String(error),

@@ -99,7 +99,7 @@ export default function ScanReceiptPage({
     id: eventId ?? crypto.randomUUID(),
    };
    handleUpdateEventById(eventData);
-   navigate(`/acara/${eventData.id}/edit`);
+   navigate(`/acara/${eventData.id}/edit`, { state: { fromScan: true } });
   } catch (error) {
    console.error('[ERROR] Failed to call scan-receipt API:', error);
    setState('error');
