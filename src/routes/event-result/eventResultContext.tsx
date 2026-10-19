@@ -24,6 +24,7 @@ export type EventResultContextValue = {
     taxTotal: number;
     serviceTotal: number;
     discountTotal: number;
+    receiptCount: number;
     shareText: string;
   };
   actions: {

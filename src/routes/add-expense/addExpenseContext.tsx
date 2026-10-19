@@ -6,6 +6,7 @@ import type {
   UseFormRegister,
 } from 'react-hook-form';
 import type { AddExpenseFormValues } from './types';
+import type { ReceiptMetaType } from '@/types';
 
 /**
  * React 19: `use()` reads context (and can unwrap Promises). It replaces `useContext()`
@@ -25,6 +26,7 @@ export type AddExpenseContextValue = {
     isEditing: boolean;
     liveTotal: number;
     recentNames: string[];
+    receipts: ReceiptMetaType[];
   };
   actions: {
     navigateHome: () => void;
@@ -34,7 +36,12 @@ export type AddExpenseContextValue = {
     removePerson: (name: string) => void;
     toggleReceiver: (itemIndex: number, personName: string) => void;
     appendItem: () => void;
+    appendItemToReceipt: (receiptId: string) => void;
     removeItem: (index: number) => void;
+    navigateAddReceipt: () => void;
+    renameReceipt: (receiptId: string, newName: string) => void;
+    deleteReceipt: (receiptId: string) => void;
+    markTitleManuallyEdited: () => void;
   };
   meta: {
     register: UseFormRegister<AddExpenseFormValues>;

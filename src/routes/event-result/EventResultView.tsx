@@ -27,6 +27,7 @@ export function EventResultView() {
     taxTotal,
     serviceTotal,
     discountTotal,
+    receiptCount,
   } = state;
 
   if (!migratedEvent) return <NotFoundPage />;
@@ -87,6 +88,14 @@ export function EventResultView() {
                 {totalItems} Item
               </span>
             </div>
+            {receiptCount > 1 ? (
+              <div className="flex items-center gap-2">
+                <ReceiptText className="size-3.5 text-slate-900" />
+                <span className="text-sm font-semibold text-slate-900">
+                  {receiptCount} Struk
+                </span>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

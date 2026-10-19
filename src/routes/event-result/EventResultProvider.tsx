@@ -87,6 +87,11 @@ export function EventResultProvider({
     [migratedEvent],
   );
 
+  const receiptCount = useMemo(
+    () => (migratedEvent ? migratedEvent.receipts.length : 0),
+    [migratedEvent],
+  );
+
   const shareText = useMemo(() => {
     if (!migratedEvent) return '';
     return formatShareText(
@@ -137,6 +142,7 @@ export function EventResultProvider({
         taxTotal,
         serviceTotal,
         discountTotal,
+        receiptCount,
         shareText,
       },
       actions: {
@@ -159,6 +165,7 @@ export function EventResultProvider({
       taxTotal,
       serviceTotal,
       discountTotal,
+      receiptCount,
       shareText,
       navigateHome,
       navigateEdit,

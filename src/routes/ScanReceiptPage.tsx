@@ -3,6 +3,11 @@
 import { useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import type { EventType } from '@/types';
+import {
+  createReceiptFromScan,
+  mergeScanResultIntoEvent,
+} from '@/utils/receipts';
+import { normalizeEventData } from '@/utils/normalizer';
 import { useCameraStream } from './scan-receipt/useCameraStream';
 import { ScanOverlay } from './scan-receipt/ScanOverlay';
 import { ConfirmView } from './scan-receipt/ConfirmView';
@@ -13,10 +18,12 @@ import { toast } from 'sonner';
 type ScanState = 'scan' | 'confirm' | 'loading' | 'error';
 
 type ScanReceiptPageProps = {
+ eventList: EventType[];
  handleUpdateEventById: (data: EventType) => void;
 };
 
 export default function ScanReceiptPage({
+ eventList,
  handleUpdateEventById,
 }: ScanReceiptPageProps) {
  const navigate = useNavigate();
@@ -93,13 +100,34 @@ export default function ScanReceiptPage({
    // before 1838
    // after using systemInstruction: 1689
    // after using responseJsonSchema & responseMimeType: 1533
-   const parsed = (await response.json()) as Omit<EventType, 'id'>;
-   const eventData: EventType = {
-    ...parsed,
-    id: eventId ?? crypto.randomUUID(),
-   };
-   handleUpdateEventById(eventData);
-   navigate(`/acara/${eventData.id}/edit`, { state: { fromScan: true } });
+    const parsed = (await response.json()) as Omit<EventType, 'id'>;
+
+    const existingEvent = eventList.find((e) => e.id === eventId);
+    let eventData: EventType;
+
+    if (existingEvent) {
+      eventData = mergeScanResultIntoEvent(
+        normalizeEventData(existingEvent),
+        parsed,
+      );
+    } else {
+      const newReceipt = createReceiptFromScan(parsed, 1);
+      eventData = {
+        ...parsed,
+        id: eventId ?? crypto.randomUUID(),
+        receipts: [newReceipt],
+        expense: {
+          ...parsed.expense,
+          items: parsed.expense.items.map((item) => ({
+            ...item,
+            receiptId: newReceipt.id,
+          })),
+        },
+      };
+    }
+
+    handleUpdateEventById(eventData);
+    navigate(`/acara/${eventData.id}/edit`, { state: { fromScan: true } });
   } catch (error) {
    console.error('[ERROR] Failed to call scan-receipt API:', error);
    setState('error');
