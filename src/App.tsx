@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { EventType } from './types';
 import { normalizeEventListData } from './utils/normalizer';
 import { Toaster } from './components/ui/sonner';
+import { toast } from 'sonner';
 
 function App() {
   const eventListValueFromLocalStorage = localStorage.getItem('eventList');
@@ -46,9 +47,14 @@ function App() {
     localStorage.setItem('eventList', JSON.stringify(updatedEventList));
   };
 
+  if (typeof window !== 'undefined') {
+    (window as unknown as { __sonner_toast?: typeof toast }).__sonner_toast =
+      toast;
+  }
+
   return (
     <>
-      <Toaster />
+      <Toaster closeButton />
       <Routes>
       <Route
         path="/"
@@ -79,7 +85,7 @@ function App() {
             />
           }
         />
-        <Route path=":eventId/scan" element={<ScanReceiptPage handleUpdateEventById={handleUpdateEventById} />} />
+        <Route path=":eventId/scan" element={<ScanReceiptPage eventList={eventList} handleUpdateEventById={handleUpdateEventById} />} />
       </Route>
       </Routes>
     </>

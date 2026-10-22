@@ -142,41 +142,43 @@ const Home = ({
       </Link>
 
       {/* Delete confirmation dialog */}
-      <AlertDialog open={showDialog}>
-        <AlertDialogContent className="max-w-xs rounded-2xl border-none shadow-2xl p-6">
-          <AlertDialogHeader className="flex flex-col items-center text-center gap-2">
-            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-2">
-              <Trash2 className="size-5 text-red-600" />
-            </div>
-            <AlertDialogTitle className="text-xl font-semibold text-slate-900">
-              Hapus Tagihan?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm text-slate-500">
-              Tindakan ini tidak bisa dibatalkan.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex flex-row gap-3 w-full mt-2">
-            <Button
-              onClick={() => setShowDialog(false)}
-              type="button"
-              variant="outline"
-              className="flex-1 py-3 rounded-xl border-slate-200 text-slate-600 font-medium hover:bg-slate-50 text-sm h-auto"
-            >
-              Batal
-            </Button>
-            <Button
-              onClick={() => {
-                handleDeleteEventById(selectedEventId);
-                setShowDialog(false);
-              }}
-              type="button"
-              className="flex-1 py-3 rounded-xl bg-[#13ec5b] text-slate-900 font-semibold hover:bg-[#13ec5b]/90 text-sm h-auto"
-            >
-              Hapus
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {showDialog ? (
+        <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+          <AlertDialogContent className="max-w-xs rounded-2xl border-none shadow-2xl p-6">
+            <AlertDialogHeader className="flex flex-col items-center text-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-2">
+                <Trash2 className="size-5 text-red-600" />
+              </div>
+              <AlertDialogTitle className="text-xl font-semibold text-slate-900">
+                Hapus Tagihan?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-sm text-slate-500">
+                Tindakan ini tidak bisa dibatalkan.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex flex-row gap-3 w-full mt-2">
+              <Button
+                onClick={() => setShowDialog(false)}
+                type="button"
+                variant="outline"
+                className="flex-1 py-3 rounded-xl border-slate-200 text-slate-600 font-medium hover:bg-slate-50 text-sm h-auto"
+              >
+                Batal
+              </Button>
+              <Button
+                onClick={() => {
+                  handleDeleteEventById(selectedEventId);
+                  setShowDialog(false);
+                }}
+                type="button"
+                className="flex-1 py-3 rounded-xl bg-[#13ec5b] text-slate-900 font-semibold hover:bg-[#13ec5b]/90 text-sm h-auto"
+              >
+                Hapus
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      ) : null}
     </main>
   );
 };

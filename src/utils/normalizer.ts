@@ -1,4 +1,5 @@
 import { DynacicPercentageValue, EventType } from '../types';
+import { migrateEventToReceipts } from './receipts';
 
 const itemDefaultValues = {
   title: '',
@@ -16,6 +17,7 @@ export const eventDefaultValues: EventType = {
     discount: { value: '0', type: 'AMOUNT' as DynacicPercentageValue },
     serviceCharge: { value: '0', type: 'AMOUNT' as DynacicPercentageValue },
   },
+  receipts: [],
 };
 
 function convertPercentageToAmount(
@@ -30,14 +32,19 @@ function convertPercentageToAmount(
 }
 
 export function migrateEventData(event: EventType): EventType {
-  const subtotal = event.expense.items.reduce(
+  const eventWithReceipts = migrateEventToReceipts(event);
+
+  const subtotal = eventWithReceipts.expense.items.reduce(
     (sum, item) => sum + Number(item.price),
     0
   );
 
-  const discount = convertPercentageToAmount(event.expense.discount, subtotal);
+  const discount = convertPercentageToAmount(
+    eventWithReceipts.expense.discount,
+    subtotal
+  );
   const serviceCharge = convertPercentageToAmount(
-    event.expense.serviceCharge,
+    eventWithReceipts.expense.serviceCharge,
     subtotal
   );
 
@@ -45,15 +52,19 @@ export function migrateEventData(event: EventType): EventType {
   const serviceAmount = Number(serviceCharge.value);
   const adjustedBase = subtotal - discountAmount + serviceAmount;
 
-  const tax = convertPercentageToAmount(event.expense.tax, adjustedBase);
+  const tax = convertPercentageToAmount(
+    eventWithReceipts.expense.tax,
+    adjustedBase
+  );
 
   return {
-    ...event,
+    ...eventWithReceipts,
     expense: {
-      items: event.expense.items.map((item) => ({
+      items: eventWithReceipts.expense.items.map((item) => ({
         title: item.title,
         price: item.price,
         receiver: (item.receiver || []).filter((r) => Boolean(r)),
+        receiptId: item.receiptId,
       })),
       tax,
       discount,
@@ -80,6 +91,7 @@ export const normalizeEventData = (
               title: item.title || '',
               price: item.price || '0',
               receiver: (item.receiver || []).filter((r) => Boolean(r)),
+              receiptId: item.receiptId,
             })),
       tax: {
         type: event?.expense?.tax?.type || 'AMOUNT',
@@ -94,6 +106,7 @@ export const normalizeEventData = (
         value: event?.expense?.serviceCharge?.value || '0',
       },
     },
+    receipts: event?.receipts || [],
   };
 };
 
@@ -104,5 +117,6 @@ export const normalizeEventListData = (
     return [eventDefaultValues];
   }
 
-  return JSON.parse(eventList);
+  const parsed = JSON.parse(eventList) as EventType[];
+  return parsed.map((event) => migrateEventData(normalizeEventData(event)));
 };

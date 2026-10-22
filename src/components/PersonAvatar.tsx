@@ -66,7 +66,12 @@ export function PersonAvatar({
 
   if (onClick) {
     return (
-      <button type="button" onClick={onClick} className={classes}>
+      <button
+        type="button"
+        onClick={onClick}
+        className={classes}
+        aria-pressed={selected}
+      >
         {initials}
       </button>
     );

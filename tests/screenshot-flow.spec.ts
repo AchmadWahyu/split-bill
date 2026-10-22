@@ -3,6 +3,7 @@ import { mkdirSync } from 'fs';
 import { join } from 'path';
 
 const OUTPUT_DIR = join(process.cwd(), 'screenshots-captured');
+const EVENT_ID = 'screenshot-flow-test';
 
 test.describe('Screenshot capture flow', () => {
   test.beforeAll(() => {
@@ -12,10 +13,8 @@ test.describe('Screenshot capture flow', () => {
   test('capture home, add expense, and person dialog screenshots', async ({
     page,
   }) => {
-    // Use mobile viewport
     await page.setViewportSize({ width: 390, height: 844 });
 
-    // Capture console messages
     const consoleErrors: string[] = [];
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
@@ -29,18 +28,17 @@ test.describe('Screenshot capture flow', () => {
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(OUTPUT_DIR, '1-home.png') });
 
-    // 2. Click the "+" floating button
-    await page.locator('a[href^="/acara/"]').first().click();
+    // 2. Go directly to a fresh edit page for the screenshot
+    await page.goto(`/acara/${EVENT_ID}/edit`);
     await page.waitForURL(/\/acara\/.*\/edit/);
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(OUTPUT_DIR, '2-tambah-pengeluaran.png') });
 
-    // 3. Click "Tambah" to open person dialog (dashed circular add-person button)
-    await page.locator('button.border-dashed').first().click();
+    // 3. Open the add-person dialog
+    await page.locator('[data-testid="add-member-button"]').click();
     await page.waitForTimeout(300);
     await page.screenshot({ path: join(OUTPUT_DIR, '3-person-dialog.png') });
 
-    // Log any console errors
     if (consoleErrors.length > 0) {
       console.log('Console errors:', consoleErrors);
     }

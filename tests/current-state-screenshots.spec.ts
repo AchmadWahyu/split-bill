@@ -3,6 +3,7 @@ import { mkdirSync } from 'fs';
 import { join } from 'path';
 
 const OUTPUT_DIR = join(process.cwd(), 'screenshots-captured');
+const EVENT_ID = 'current-state-test';
 
 test.describe('Current state screenshots', () => {
   test.beforeAll(() => {
@@ -18,8 +19,8 @@ test.describe('Current state screenshots', () => {
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(OUTPUT_DIR, 'current-1-home.png') });
 
-    // 2. Click "+" and go to add expense page
-    await page.locator('a[href^="/acara/"]').first().click();
+    // 2. Go to a fresh edit page
+    await page.goto(`/acara/${EVENT_ID}/edit`);
     await page.waitForURL(/\/acara\/.*\/edit/);
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(OUTPUT_DIR, 'current-2-add-expense.png') });
@@ -28,18 +29,16 @@ test.describe('Current state screenshots', () => {
     await page.goto('/');
     await page.waitForTimeout(500);
 
-    // Check if there are event cards (from previous E2E test)
-    const eventCards = page.locator('[data-slot="card"]');
+    // Click first event card if any exist (cards show person count + amount)
+    const eventCards = page.locator('button').filter({ hasText: /\d+\s+orang/ });
     const count = await eventCards.count();
 
     if (count > 0) {
-      // Click first event to see result page
       await eventCards.first().click();
       await page.waitForURL(/\/acara\/[^/]+$/);
       await page.waitForTimeout(500);
       await page.screenshot({ path: join(OUTPUT_DIR, 'current-3-result-page.png') });
     } else {
-      // No events - take screenshot of empty home
       await page.screenshot({ path: join(OUTPUT_DIR, 'current-3-home-no-events.png') });
     }
   });

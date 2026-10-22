@@ -3,6 +3,14 @@ import { mkdirSync } from 'fs';
 import { join } from 'path';
 
 const OUTPUT_DIR = join(process.cwd(), 'screenshots-captured');
+const EVENT_ID = 'verify-result-page';
+
+async function addPerson(page, name: string) {
+  await page.locator('[data-testid="add-member-button"]').click();
+  await page.getByPlaceholder('Masukkan nama...').fill(name);
+  await page.getByRole('button', { name: 'Tambah' }).last().click();
+  await page.waitForTimeout(150);
+}
 
 test.describe('Result page verification', () => {
   test.beforeAll(() => {
@@ -15,21 +23,18 @@ test.describe('Result page verification', () => {
     test.setTimeout(90000);
     await page.setViewportSize({ width: 390, height: 900 });
 
-    // Create the event first (fresh browser has no localStorage)
-    await page.goto('/');
-    await page.locator('a[href^="/acara/"]').first().click();
+    // Go directly to a fresh edit page
+    await page.goto(`/acara/${EVENT_ID}/edit`);
     await page.waitForURL(/\/acara\/.*\/edit/);
 
     // Add persons
     for (const name of ['Joko', 'Eko', 'Sukiyem']) {
-      await page.locator('button.border-dashed').first().click();
-      await page.getByPlaceholder('Masukkan nama...').fill(name);
-      await page.getByRole('button', { name: 'Tambah' }).last().click();
-      await page.waitForTimeout(150);
+      await addPerson(page, name);
     }
 
     // Fill form
     await page.getByPlaceholder('contoh: Starbucks, Makan Siang').fill('Makan Siang');
+    const card = page.locator('[data-testid="orphan-items-card"]').first();
     const items = [
       { name: 'Ayam Goreng', price: '60000', assign: ['JO', 'SU'] },
       { name: 'Pizza', price: '125000', assign: ['JO', 'EK', 'SU'] },
@@ -37,56 +42,43 @@ test.describe('Result page verification', () => {
     ];
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      if (i > 0) await page.getByRole('button', { name: 'Tambah Item Baru' }).click();
+      if (i > 0) await card.getByRole('button', { name: 'Tambah Item' }).click();
       await page.waitForTimeout(100);
-      const card = page.locator('form').locator('div.bg-white.border.border-slate-100').nth(i);
-      await card.getByPlaceholder('Nama item').fill(item.name);
-      await card.locator('input[inputmode="numeric"]').first().fill(item.price);
+      const row = card.locator('[data-testid="receipt-item"]').nth(i);
+      await row.locator('input[placeholder="Nama item"]').fill(item.name);
+      await row.locator('input[inputmode="numeric"]').first().fill(item.price);
       for (const init of item.assign) {
-        await card.getByRole('button', { name: init }).click();
+        await row.getByRole('button', { name: init }).click();
       }
     }
-    await page.locator('input[inputmode="numeric"]').nth(3).fill('28100');
-    await page.locator('input[inputmode="numeric"]').nth(4).fill('10000');
-    await page.locator('input[inputmode="numeric"]').nth(5).fill('40000');
-    await page.getByRole('button', { name: 'Simpan' }).click();
+    await page.locator('[data-testid="tax-input"]').fill('28100');
+    await page.locator('[data-testid="service-input"]').fill('10000');
+    await page.locator('[data-testid="discount-input"]').fill('40000');
+    await page.getByRole('button', { name: 'Simpan & Lanjut Bagi Tagihan' }).click();
     await page.waitForURL(/\/acara\/[^/]+$/);
     await page.waitForTimeout(500);
 
     // Screenshot 1: Result page (collapsed state)
-    await page.screenshot({
-      path: join(OUTPUT_DIR, 'result-page-collapsed.png'),
-    });
+    await page.screenshot({ path: join(OUTPUT_DIR, 'result-page-collapsed.png') });
 
-    // 2. Verify header
-    await expect(
-      page.getByRole('heading', { name: 'Makan Siang' })
-    ).toBeVisible();
-    await expect(
-      page.getByText('Hasil pembagian tagihan')
-    ).toBeVisible();
+    // Verify header
+    await expect(page.getByRole('heading', { name: 'Makan Siang' })).toBeVisible();
+    await expect(page.getByText('Total Tagihan')).toBeVisible();
 
-    // 3. Verify green total card (total amount, person count, item count)
-    await expect(page.getByText('Total tagihan')).toBeVisible();
-    await expect(page.getByText(/anggota · \d+ item/)).toBeVisible();
+    // Verify green total card (total amount, person count, item count)
+    await expect(page.getByText(/\d+ Anggota/)).toBeVisible();
+    await expect(page.getByText(/\d+ Item/)).toBeVisible();
 
-    // 4. Receipt summary & person cards verified via screenshots below
-
-    // 5. Verify person cards (Joko, Eko, Sukiyem)
+    // Verify person cards
     await expect(page.getByText('Joko', { exact: true })).toBeVisible();
     await expect(page.getByText('Eko', { exact: true })).toBeVisible();
     await expect(page.getByText('Sukiyem', { exact: true })).toBeVisible();
 
-    // 6. Click Joko card to expand
+    // Expand Joko card
     await page.getByText('Joko', { exact: true }).click();
     await page.waitForTimeout(300);
+    await page.screenshot({ path: join(OUTPUT_DIR, 'result-page-joko-expanded.png') });
 
-    // Screenshot 2: Expanded Joko card
-    await page.screenshot({
-      path: join(OUTPUT_DIR, 'result-page-joko-expanded.png'),
-    });
-
-    // Verify expanded content
     await expect(page.getByText('Ayam Goreng').first()).toBeVisible();
     await expect(page.getByText('Pajak (proporsional)').first()).toBeVisible();
   });

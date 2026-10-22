@@ -60,8 +60,10 @@ export function AddPersonDialog({
     onClose();
   };
 
+  if (!open) return null;
+
   return (
-    <AlertDialog open={open}>
+    <AlertDialog open={open} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Tambah Anggota</AlertDialogTitle>

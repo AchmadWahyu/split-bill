@@ -14,6 +14,7 @@ export type AddExpenseFormValues = {
       title: string;
       price: string;
       receiver: string[];
+      receiptId?: string;
     }[];
     tax: string;
     discount: string;

@@ -4,27 +4,32 @@ export type PersonType = {
 
 export type DynacicPercentageValue = 'PERCENTAGE' | 'AMOUNT';
 
+export type FeeType = {
+  value: string;
+  type: DynacicPercentageValue;
+};
+
 export type ItemType = {
   title: string;
   price: string;
   payer?: PersonType;
   receiver: string[];
+  receiptId?: string;
 };
 
 export type ExpenseType = {
   items: ItemType[];
-  tax: {
-    value: string;
-    type: DynacicPercentageValue;
-  };
-  discount: {
-    value: string;
-    type: DynacicPercentageValue;
-  };
-  serviceCharge: {
-    value: string;
-    type: DynacicPercentageValue;
-  };
+  tax: FeeType;
+  discount: FeeType;
+  serviceCharge: FeeType;
+};
+
+export type ReceiptMetaType = {
+  id: string;
+  name: string;
+  tax: FeeType;
+  discount: FeeType;
+  serviceCharge: FeeType;
 };
 
 export type EventType = {
@@ -32,4 +37,5 @@ export type EventType = {
   title: string;
   personList: PersonType[];
   expense: ExpenseType;
+  receipts: ReceiptMetaType[];
 };
