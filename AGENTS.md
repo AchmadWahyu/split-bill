@@ -70,7 +70,8 @@
 - Add members via `addPerson(page, name)` helper.
 - Assign people to items via `assignPersonToItemInReceipt(page, receiptName, itemIndex, initials)`.
 - Get initials from a name with `getPersonInitials(name)`.
-- Save the event via `saveEvent(page)` helper.
+- Save the event via `saveEvent(page)` helper (clicks the **"Bagi Tagihan"** submit button).
+- Prefer helpers over hardcoding button labels, so copy changes only need updating in one place.
 
 ### Result-page assertions
 - Use `expectResultPageForEvent(page, event)` from `tests/helpers/resultAssertions.ts` to verify totals, member count, item count, and per-person amounts.

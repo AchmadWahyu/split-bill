@@ -223,7 +223,7 @@ export async function dismissAllToasts(page: Page) {
 export async function saveEvent(page: Page) {
   await dismissAllToasts(page);
   await page
-    .getByRole('button', { name: 'Simpan & Lanjut Bagi Tagihan' })
+    .getByRole('button', { name: 'Bagi Tagihan' })
     .click();
   await page.waitForURL(/\/acara\/[^/]+$/);
   await page.waitForTimeout(400);

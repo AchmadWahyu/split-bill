@@ -49,7 +49,7 @@ test.describe('Test Receipt flow - current dev server', () => {
     // Tax: 2000 (no discount, no service charge)
     await page.locator('[data-testid="tax-input"]').fill('2000');
 
-    await page.getByRole('button', { name: 'Simpan & Lanjut Bagi Tagihan' }).click();
+    await page.getByRole('button', { name: 'Bagi Tagihan' }).click();
     await page.waitForURL(/\/acara\/[^/]+$/);
     await page.waitForTimeout(500);
 

@@ -67,7 +67,7 @@ test.describe('E2E full flow', () => {
     await page.screenshot({ path: join(OUTPUT_DIR, 'e2e-filled-form.png') });
 
     // 8. Save
-    await page.getByRole('button', { name: 'Simpan & Lanjut Bagi Tagihan' }).click();
+    await page.getByRole('button', { name: 'Bagi Tagihan' }).click();
     await page.waitForURL(/\/acara\/[^/]+$/);
     await page.waitForTimeout(500);
 

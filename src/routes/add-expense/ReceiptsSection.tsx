@@ -501,7 +501,7 @@ export function ReceiptsSection({
         className="w-full border-2 border-dashed border-[#13ec5b] rounded-xl py-4 flex items-center justify-center gap-2 cursor-pointer hover:bg-green-50/50 transition-colors"
       >
         <Camera className="size-5 text-green-600" />
-        <span className="text-sm font-bold text-green-700">+ Scan / Upload Struk Baru</span>
+        <span className="text-sm font-bold text-green-700">Tambah Struk Lain</span>
       </button>
     </div>
   );

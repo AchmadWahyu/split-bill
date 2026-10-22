@@ -55,7 +55,7 @@ test.describe('Makan Malam flow verification', () => {
     await page.locator('[data-testid="tax-input"]').fill('5000');
     await page.locator('[data-testid="discount-input"]').fill('3000');
 
-    await page.getByRole('button', { name: 'Simpan & Lanjut Bagi Tagihan' }).click();
+    await page.getByRole('button', { name: 'Bagi Tagihan' }).click();
     await page.waitForURL(/\/acara\/[^/]+$/);
     await page.waitForTimeout(500);
 

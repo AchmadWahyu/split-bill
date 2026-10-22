@@ -54,7 +54,7 @@ test.describe('Result page verification', () => {
     await page.locator('[data-testid="tax-input"]').fill('28100');
     await page.locator('[data-testid="service-input"]').fill('10000');
     await page.locator('[data-testid="discount-input"]').fill('40000');
-    await page.getByRole('button', { name: 'Simpan & Lanjut Bagi Tagihan' }).click();
+    await page.getByRole('button', { name: 'Bagi Tagihan' }).click();
     await page.waitForURL(/\/acara\/[^/]+$/);
     await page.waitForTimeout(500);
 

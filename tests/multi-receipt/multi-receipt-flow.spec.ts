@@ -81,7 +81,7 @@ test.describe('Multi-receipt flow', () => {
       page.getByRole('heading', { name: 'Warung Kopi, Solaria' }),
     ).toBeVisible();
     await expect(page.getByText('Total Tagihan')).toBeVisible();
-    await expect(page.getByText(/2 Receipt/)).toBeVisible();
+    await expect(page.getByText(/2 Struk/)).toBeVisible();
     await expect(page.getByText('Andi', { exact: true })).toBeVisible();
     await expect(page.getByText('Budi', { exact: true })).toBeVisible();
 
