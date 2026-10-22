@@ -3,6 +3,14 @@ import { mkdirSync } from 'fs';
 import { join } from 'path';
 
 const OUTPUT_DIR = join(process.cwd(), 'screenshots-captured');
+const EVENT_ID = 'verify-makan-malam';
+
+async function addPerson(page, name: string) {
+  await page.locator('[data-testid="add-member-button"]').click();
+  await page.getByPlaceholder('Masukkan nama...').fill(name);
+  await page.getByRole('button', { name: 'Tambah' }).last().click();
+  await page.waitForTimeout(150);
+}
 
 test.describe('Makan Malam flow verification', () => {
   test.beforeAll(() => {
@@ -15,18 +23,13 @@ test.describe('Makan Malam flow verification', () => {
     test.setTimeout(90000);
     await page.setViewportSize({ width: 390, height: 844 });
 
-    // 1. Create new event
-    await page.goto('/');
-    await page.locator('a[href^="/acara/"]').first().click();
+    // 1. Go to a fresh edit page
+    await page.goto(`/acara/${EVENT_ID}/edit`);
     await page.waitForURL(/\/acara\/.*\/edit/);
 
     // Add Andi and Budi
-    for (const name of ['Andi', 'Budi']) {
-      await page.locator('button.border-dashed').first().click();
-      await page.getByPlaceholder('Masukkan nama...').fill(name);
-      await page.getByRole('button', { name: 'Tambah' }).last().click();
-      await page.waitForTimeout(150);
-    }
+    await addPerson(page, 'Andi');
+    await addPerson(page, 'Budi');
 
     // Title: Makan Malam
     await page
@@ -34,88 +37,58 @@ test.describe('Makan Malam flow verification', () => {
       .fill('Makan Malam');
 
     // Item 1: Nasi Goreng, 25000, assign Andi and Budi
-    const item1 = page
-      .locator('form')
-      .locator('div.bg-white.border.border-slate-100')
-      .first();
-    await item1.getByPlaceholder('Nama item').fill('Nasi Goreng');
+    const card = page.locator('[data-testid="orphan-items-card"]').first();
+    const item1 = card.locator('[data-testid="receipt-item"]').first();
+    await item1.locator('input[placeholder="Nama item"]').fill('Nasi Goreng');
     await item1.locator('input[inputmode="numeric"]').first().fill('25000');
-    await item1.getByRole('button', { name: 'AN' }).click(); // Andi
-    await item1.getByRole('button', { name: 'BU' }).click(); // Budi
+    await item1.getByRole('button', { name: 'AN' }).click();
+    await item1.getByRole('button', { name: 'BU' }).click();
 
     // Item 2: Es Teh, 8000, assign only Andi
-    await page.getByRole('button', { name: 'Tambah Item Baru' }).click();
-    await page.waitForTimeout(100);
-    const item2 = page
-      .locator('form')
-      .locator('div.bg-white.border.border-slate-100')
-      .nth(1);
-    await item2.getByPlaceholder('Nama item').fill('Es Teh');
+    await card.getByRole('button', { name: 'Tambah Item' }).click();
+    const item2 = card.locator('[data-testid="receipt-item"]').nth(1);
+    await item2.locator('input[placeholder="Nama item"]').fill('Es Teh');
     await item2.locator('input[inputmode="numeric"]').first().fill('8000');
-    await item2.getByRole('button', { name: 'AN' }).click(); // Andi only
+    await item2.getByRole('button', { name: 'AN' }).click();
 
-    // Tax: 5000, Discount: 3000 (Service charge left at 0)
-    // Order: item1 price, item2 price, tax, service charge, discount
-    await page.locator('input[inputmode="numeric"]').nth(2).fill('5000');
-    await page.locator('input[inputmode="numeric"]').nth(4).fill('3000');
+    // Tax: 5000, Discount: 3000
+    await page.locator('[data-testid="tax-input"]').fill('5000');
+    await page.locator('[data-testid="discount-input"]').fill('3000');
 
-    await page.getByRole('button', { name: 'Simpan' }).click();
+    await page.getByRole('button', { name: 'Simpan & Lanjut Bagi Tagihan' }).click();
     await page.waitForURL(/\/acara\/[^/]+$/);
     await page.waitForTimeout(500);
 
-    // 2. Screenshots - scroll from top to bottom
-    // Top
+    // 2. Screenshots
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(200);
-    await page.screenshot({
-      path: join(OUTPUT_DIR, 'makan-malam-1-top.png'),
-    });
+    await page.screenshot({ path: join(OUTPUT_DIR, 'makan-malam-1-top.png') });
 
-    // Ringkasan area
     await page.evaluate(() => window.scrollTo(0, 250));
     await page.waitForTimeout(200);
-    await page.screenshot({
-      path: join(OUTPUT_DIR, 'makan-malam-2-ringkasan.png'),
-    });
+    await page.screenshot({ path: join(OUTPUT_DIR, 'makan-malam-2-ringkasan.png') });
 
-    // Person cards
     await page.evaluate(() => window.scrollTo(0, 450));
     await page.waitForTimeout(200);
-    await page.screenshot({
-      path: join(OUTPUT_DIR, 'makan-malam-3-person-cards.png'),
-    });
+    await page.screenshot({ path: join(OUTPUT_DIR, 'makan-malam-3-person-cards.png') });
 
-    // Full page
-    await page.screenshot({
-      path: join(OUTPUT_DIR, 'makan-malam-4-full-page.png'),
-      fullPage: true,
-    });
+    await page.screenshot({ path: join(OUTPUT_DIR, 'makan-malam-4-full-page.png'), fullPage: true });
 
     // 3. Verifications
-    // a. Ringkasan / Subtotal - scroll to reveal
     await page.evaluate(() => window.scrollTo(0, 200));
     await page.waitForTimeout(200);
-    await expect(
-      page.getByText(/Ringkasan|Subtotal/).first(),
-    ).toBeVisible();
+    await expect(page.getByText(/Ringkasan|Subtotal/).first()).toBeVisible();
 
-    // b. Person cards - Andi and Budi visible
     await page.evaluate(() => window.scrollTo(0, 400));
     await page.waitForTimeout(200);
     await expect(page.getByText('Andi', { exact: true })).toBeVisible();
     await expect(page.getByText('Budi', { exact: true })).toBeVisible();
 
-    // c. Torn edges - ReceiptCard wraps content; structure verified via screenshots
-
-    // d. Expand Andi
+    // Expand Andi
     await page.getByText('Andi', { exact: true }).click();
     await page.waitForTimeout(400);
+    await page.screenshot({ path: join(OUTPUT_DIR, 'makan-malam-5-andi-expanded.png') });
 
-    await page.screenshot({
-      path: join(OUTPUT_DIR, 'makan-malam-5-andi-expanded.png'),
-    });
-
-    // Verify expanded content: item breakdown, dashed separators, double-dashed before Total
     await expect(page.getByText('Nasi Goreng').first()).toBeVisible();
     await expect(page.getByText('Es Teh').first()).toBeVisible();
     await expect(page.getByText('Total').first()).toBeVisible();
